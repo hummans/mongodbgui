@@ -8,16 +8,17 @@ app.get('/check/', (req, res) => {
     res.send("Check database");
 });
 
-app.get('/insert/', (req, res) => {
+app.get('/insert/:database', (req, res) => {
+    var database = req.params.database;
     var url = "mongodb+srv://appuser:1234@cluster0-vdt7y.mongodb.net/test?retryWrites=true&w=majority";
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
-        var dbo = db.db("react");
+        var dbo = db.db(database);
         var myobj = { name: "Company Inc", address: "Some Random data" };
         return dbo.collection("native").insertOne(myobj, function(err) {
-            if (err)  return res.send(err);
+            if (err)  return res.send("Error " + database + err);
             db.close();
-            return res.send("1 document inserted");
+            return res.send("1 document inserted to " + database);
         });
     });
 });
