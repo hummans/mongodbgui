@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node build --output public",
-    "start":  [{ "src": "Server.js", "use": "@now/node-server" }],
+    "build": [{ "src": "Server.js", "use": "@now/node-server" }],
+    "start":  "node Server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
