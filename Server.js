@@ -7,7 +7,7 @@ var MongoClient = require('mongodb').MongoClient;
 const app = express();
 
 app.get('/test/', (req, res) => {
-    res.send("Testing");
+    res.send("Testing the server");
 });
 
 app.get('/database/', (req, res) => {
