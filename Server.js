@@ -14,10 +14,10 @@ app.get('/insert/', (req, res) => {
         if (err) throw err;
         var dbo = db.db("react");
         var myobj = { name: "Company Inc", address: "Highway 37" };
-        dbo.collection("native").insertOne(myobj, function(err, res) {
-            if (err) throw err;
-            console.log("1 document inserted");
+        return dbo.collection("native").insertOne(myobj, function(err) {
+            if (err)  return res.send(err);
             db.close();
+            return res.send("1 document inserted");
         });
     });
 });
