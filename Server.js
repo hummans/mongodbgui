@@ -1,13 +1,20 @@
 const express = require("express");
-const assert = require('assert');
-const path = require('path');
-const http = require("http");
 var MongoClient = require('mongodb').MongoClient;
 
 const app = express();
 
-app.get('/test/', (req, res) => {
-    res.send("Testing the server");
+app.get('/insert/', (req, res) => {
+    var url = "mongodb+srv://appuser:1234@cluster0-vdt7y.mongodb.net/test?retryWrites=true&w=majority";
+    MongoClient.connect(url, function(err, db) {
+        if (err) throw err;
+        var dbo = db.db("react");
+        var myobj = { name: "Company Inc", address: "Highway 37" };
+        dbo.collection("native").insertOne(myobj, function(err, res) {
+            if (err) throw err;
+            res.send("1 document inserted");
+            db.close();
+        });
+    });
 });
 
 app.get('/database/', (req, res) => {
