@@ -26,7 +26,7 @@ app.get('/insert/:username/:password/:cluster/:database/:collection', (req, res)
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db(database);
-        var myobj = { name: "Company Inc", address: "Some Random data" };
+        var myobj = { name: "Company Inc", address: "Some data" };
         return dbo.collection(collection).insertOne(myobj, function(err) {
             if (err)  return res.send("Error " + database + collection + err);
             db.close();
