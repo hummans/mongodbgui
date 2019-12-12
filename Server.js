@@ -13,7 +13,7 @@ app.get('/insert/', (req, res) => {
     MongoClient.connect(url, function(err, db) {
         if (err) throw err;
         var dbo = db.db("react");
-        var myobj = { name: "Company Inc", address: "Highway 37" };
+        var myobj = { name: "Company Inc", address: "Some Random data" };
         return dbo.collection("native").insertOne(myobj, function(err) {
             if (err)  return res.send(err);
             db.close();
