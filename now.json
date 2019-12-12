@@ -6,6 +6,11 @@
       "src": "/insert",
       "dest": "/Server.js",
       "methods": ["GET"]
+    },
+    {
+      "src": "/check",
+      "dest": "/Server.js",
+      "methods": ["GET"]
     }
   ]
 }
