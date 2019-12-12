@@ -4,11 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": [
-    {
-      "src": "Server.js",
-      "use": "@now/node-server"
-    },
     "start":  "node Server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
