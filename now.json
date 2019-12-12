@@ -4,7 +4,7 @@
   "routes": [
     {
       "src": "/test",
-      "dest": "/Server.js/test/",
+      "dest": "/Server.js",
       "methods": ["GET"]
     }
   ]
