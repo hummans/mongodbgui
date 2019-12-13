@@ -13,18 +13,22 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// delete many
 app.post('/delete/many/', (req, res) => {
     _delete.deleteMany(req, res)
 });
 
+// delete one
 app.post('/delete/one/', (req, res) => {
     _delete.deleteOne(req, res)
 });
 
+// drop collection
 app.post('/drop/collection/', (req, res) => {
     _drop.dropCollection(req, res)
 });
 
+// create collection
 app.post('/create/collection/', (req, res) => {
     _create.createCollection(req, res)
 });
