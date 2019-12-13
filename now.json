@@ -4,13 +4,18 @@
   "routes": [
     {
       "src": "/insert/.*",
-      "dest": "/Server.js",
+      "dest": "/server.js",
       "methods": ["POST"]
     },
     {
-      "src": "/check",
-      "dest": "/Server.js",
-      "methods": ["GET"]
+      "src": "/delete/.*",
+      "dest": "/server.js",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/drop/.*",
+      "dest": "/server.js",
+      "methods": ["POST"]
     }
   ]
 }
