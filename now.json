@@ -16,6 +16,11 @@
       "src": "/drop/.*",
       "dest": "/server.js",
       "methods": ["POST"]
+    },
+    {
+      "src": "/create/.*",
+      "dest": "/server.js",
+      "methods": ["POST"]
     }
   ]
 }
