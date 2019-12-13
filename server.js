@@ -4,6 +4,7 @@ var _insert = require('./insert');
 var _delete = require('./delete');
 var _drop = require('./drop');
 var _create = require('./create');
+var _update = require('./update');
 
 const app = express();
 
@@ -36,6 +37,15 @@ app.post('/insert/many/', (req, res) => {
     _insert.insertMany(req, res)
 });
 
+// update row
+app.post('/update/one/', (req, res) => {
+    _update.updateOne(req, res)
+});
+
+// update many
+app.post('/update/many/', (req, res) => {
+    _update.updateMany(req, res)
+});
 
 
 const API_PORT = process.env.PORT || 4000;
