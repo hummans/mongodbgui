@@ -21,6 +21,16 @@
       "src": "/create/.*",
       "dest": "/server.js",
       "methods": ["POST"]
+    },
+    {
+      "src": "/find/.*",
+      "dest": "/server.js",
+      "methods": ["POST"]
+    },
+    {
+      "src": "/update/.*",
+      "dest": "/server.js",
+      "methods": ["POST"]
     }
   ]
 }
