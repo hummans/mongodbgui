@@ -12,45 +12,37 @@ app.post('/check/', (req, res) => {
     res.send("username " + req.body.username);
 });
 
+// insert row
 app.post('/insert/', (req, res) => {
+   var auth = Object.entries(req.body);
 
-    validate_request(req);
+    var url = "mongodb+srv://username:password@cluster.mongodb.net/test?retryWrites=true&w=majority";
+    var replace = {
+        username:auth[0][1],
+        password:auth[1][1],
+        cluster:auth[2][1]
+    };
 
-    var username = req.body.username;
-    var password = req.body.password;
-    var cluster = req.body.cluster;
-    var database = req.body.database;
-    var collection = req.body.collection;
-    var data = req.body.data;
-
-    console.log(username, password, cluster, database, collection, data);
-
-    // cluster0-vdt7y
-    var temp_url = "mongodb+srv://username:password@cluster.mongodb.net/test?retryWrites=true&w=majority";
-    var temp_username = temp_url.replace("username", username);
-    var temp_password = temp_username.replace("password", password);
-    var url = temp_password.replace("cluster", cluster);
-
-    console.log(url, data);
-
-    MongoClient.connect(url, function(err, db) {
-        if (err) throw err;
-        var dbo = db.db(database);
-        return dbo.collection(collection).insertOne(data, function(err) {
-            if (err)  return res.send("Error " + database + collection + err);
-            db.close();
-            return res.send("1 document inserted to " + database + collection);
-        });
+    url =  url.replace(/username|password|cluster/gi, function(matched){
+        return replace[matched];
     });
+
+    try{
+        MongoClient.connect(url, {useUnifiedTopology: true}, function(err, db) {
+            if (err) return  res.send('{"status":"error", "desc":'+ err + '}');
+            var dbo = db.db(auth[3][1]);
+            return dbo.collection(auth[4][1]).insertOne(auth[5][1], function(err) {
+                if (err)  return  res.send('{"status":"error", "desc":'+ err + '}');
+                db.close();
+                return res.send('{"status":"ok"}');
+            });
+        });
+    } catch (e) {
+        return  res.send('{"status":"error", "desc":'+ e + '}');
+    }
 });
 
-validate_request = function (req) {
-    for (var item in req.body) {
-        if(req.body.hasOwnProperty(item)){
-            if(item !== "string") console.log('valid');
-        }
-    }
-};
+
 
 const API_PORT = process.env.PORT || 4000;
 app.listen(API_PORT, () => console.log(`PORT ${API_PORT}`));
