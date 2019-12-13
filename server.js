@@ -6,6 +6,7 @@ var _drop = require('./drop');
 var _create = require('./create');
 var _update = require('./update');
 var _find = require('./find');
+var _get = require('./get');
 
 const app = express();
 
@@ -62,6 +63,17 @@ app.post('/find/all/', (req, res) => {
 app.post('/find/some/', (req, res) => {
     _find.findSome(req, res)
 });
+
+// get collections
+app.post('/get/collections/', (req, res) => {
+    _get.getCollections(req, res)
+});
+
+// get databases
+app.post('/get/databases/', (req, res) => {
+    _get.getDatabases(req, res)
+});
+
 
 const API_PORT = process.env.PORT || 4000;
 app.listen(API_PORT, () => console.log(`PORT ${API_PORT}`));
