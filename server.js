@@ -58,5 +58,10 @@ app.post('/find/all/', (req, res) => {
     _find.findAll(req, res)
 });
 
+// find some
+app.post('/find/some/', (req, res) => {
+    _find.findSome(req, res)
+});
+
 const API_PORT = process.env.PORT || 4000;
 app.listen(API_PORT, () => console.log(`PORT ${API_PORT}`));
