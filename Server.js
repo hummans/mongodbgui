@@ -4,9 +4,8 @@ var bodyParser = require('body-parser');
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.raw());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.post('/check/', (req, res) => {
     res.send("username " + req.body.username);

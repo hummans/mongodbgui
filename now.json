@@ -5,7 +5,7 @@
     {
       "src": "/insert/.*",
       "dest": "/Server.js",
-      "methods": ["GET"]
+      "methods": ["POST"]
     },
     {
       "src": "/check",
