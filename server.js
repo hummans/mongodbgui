@@ -5,6 +5,7 @@ var _delete = require('./delete');
 var _drop = require('./drop');
 var _create = require('./create');
 var _update = require('./update');
+var _find = require('./find');
 
 const app = express();
 
@@ -47,6 +48,15 @@ app.post('/update/many/', (req, res) => {
     _update.updateMany(req, res)
 });
 
+// find row
+app.post('/find/one/', (req, res) => {
+    _find.findOne(req, res)
+});
+
+// find all
+app.post('/find/all/', (req, res) => {
+    _find.findAll(req, res)
+});
 
 const API_PORT = process.env.PORT || 4000;
 app.listen(API_PORT, () => console.log(`PORT ${API_PORT}`));
