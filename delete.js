@@ -1,14 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
 module.exports = {
-    /*{
-         "username" : "appuser",
-         "password" : "1234",
-         "cluster" : "cluster0-vdt7y",
-         "database":"react",
-         "collection":"native",
-         "data":{"Price": "101"}
-      }
-     */
     deleteMany: function (req, res) {
         var auth = Object.entries(req.body);
 
@@ -37,15 +28,6 @@ module.exports = {
             return  res.send('{"status":"error", "desc":'+ e + '}');
         }
     },
-    /*{
-         "username" : "appuser",
-         "password" : "1234",
-         "cluster" : "cluster0-vdt7y",
-         "database":"react",
-         "collection":"native",
-         "data":{"Price": "101"}
-      }
-     */
     deleteOne: function (req, res) {
         var auth = Object.entries(req.body);
 

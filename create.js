@@ -1,13 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
 module.exports = {
-    /*{
-         "username" : "appuser",
-         "password" : "1234",
-         "cluster" : "cluster0-vdt7y",
-         "database":"react",
-         "collection":"native"
-      }
-     */
     createCollection: function (req, res) {
         var auth = Object.entries(req.body);
 
