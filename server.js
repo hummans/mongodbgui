@@ -1,5 +1,6 @@
 const express = require("express");
 var bodyParser = require('body-parser');
+const path = require('path');
 var _insert = require('./insert');
 var _delete = require('./delete');
 var _drop = require('./drop');
@@ -7,11 +8,16 @@ var _create = require('./create');
 var _update = require('./update');
 var _find = require('./find');
 var _get = require('./get');
+var RateLimit = require('express-rate-limit');
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+var limiter = new RateLimit({
+    windowMs: 60*1000, // 1 minute
+    max: 15
+});
 
 // delete many
 app.post('/delete/many/', (req, res) => {
@@ -77,6 +83,14 @@ app.post('/get/collections/', (req, res) => {
 app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
 });
+app.use(limiter, express.static(path.join(__dirname, 'client/build')));
+app.get('*', function(req, res) {
+    try{
+        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    } catch (e) {
+        console.log(e);
+    }
 
+});
 const API_PORT = process.env.PORT || 4000;
 app.listen(API_PORT, () => console.log(`PORT ${API_PORT}`));
