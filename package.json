@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cd client && npm run build && cd .. && node Server.js",
-    "now-build": "cd client && npm install && npm run build",
+    "start": "node Server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,6 +16,7 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.0.0",
     "mongodb": "^3.4.0",
+    "now": "^16.7.0",
     "path": "^0.12.7"
   }
 }
