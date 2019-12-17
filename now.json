@@ -1,7 +1,7 @@
 {
   "version": 2,
   "builds": [
-    { "src": "server.js", "use": "@now/node-server" }],
+    { "src": "/server.js", "use": "@now/node-server" }],
   "routes": [
     {
       "src": "/insert/.*",
@@ -37,10 +37,6 @@
       "src": "/get/.*",
       "dest": "/server.js",
       "methods": ["POST"]
-    },
-    {
-      "src": "/.*",
-      "dest": "/server.js"
     }
   ]
 }
