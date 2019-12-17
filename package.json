@@ -1,12 +1,11 @@
 {
-  "name": "react-native-server",
+  "name": "nosql-server",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "now-start": "node server.js",
-    "now-build": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
