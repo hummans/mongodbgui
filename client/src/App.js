@@ -13,7 +13,7 @@ function App() {
           <div className="navbar-collapse" id="navbarsExampleDefault">
               <nav className="nav nav-underline">
                 <span className="nav-link">
-                    <Link to="/home"><img src={'https://image.flaticon.com/icons/png/512/309/309590.png'} alt={'go to home'} height='24'/></Link>
+                    <Link to="/home">Home</Link>
                 </span>
 
               </nav>
