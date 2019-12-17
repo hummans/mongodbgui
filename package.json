@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "now-start": "node server.js",
-    "now-build": "cd client && npm run build",
+    "now-build": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
