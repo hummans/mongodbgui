@@ -83,6 +83,7 @@ app.post('/get/collections/', (req, res) => {
 app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
 });
+
 app.use(limiter, express.static(path.join(__dirname, 'client/build')));
 app.get('*', function(req, res) {
     try{
