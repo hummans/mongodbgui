@@ -84,11 +84,11 @@ app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
 });
 
-app.use(limiter, express.static(path.join(__dirname, 'client/build')));
+app.use(limiter, express.static(path.join(__dirname, 'client', 'build')));
 
 app.get('/client/*', function(req, res) {
     try{
-        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+        res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
     } catch (e) {
         console.log('error' + e);
     }
