@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 var limiter = new RateLimit({
     windowMs: 60*1000, // 1 minute
-    max: 15
+    max: 25
 });
 
 // delete many
@@ -85,7 +85,7 @@ app.post('/get/databases/', (req, res) => {
 });
 
 app.use(limiter, express.static(path.join(__dirname, 'client/build')));
-app.get('/editor/*', function(req, res) {
+app.get('/*', function(req, res) {
     try{
         res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
     } catch (e) {
