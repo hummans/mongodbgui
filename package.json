@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "cd client && npm run build && cd .. && node Server.js",
-    "now-build": "cd client && npm install && npm run build && mv build dist",
+    "now-build": "cd client && npm install && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
