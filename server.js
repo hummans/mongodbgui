@@ -89,7 +89,7 @@ app.get('/client/*', function(req, res) {
     try{
         res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
     } catch (e) {
-        console.log(e);
+        console.log('error' + e);
     }
 
 });
