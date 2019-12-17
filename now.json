@@ -38,7 +38,7 @@
       "methods": ["POST"]
     },
     {
-      "src": "/.*",
+      "src": "/editor/.*",
       "dest": "/server.js"
     }
   ]
