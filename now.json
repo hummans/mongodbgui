@@ -39,7 +39,7 @@
       "methods": ["POST"]
     },
     {
-      "src": "/client/.*",
+      "src": "/.*",
       "dest": "/server.js"
     }
   ]
