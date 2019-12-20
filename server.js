@@ -15,9 +15,19 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// http://localhost:4000/get/data/firebase?database=asAS&type=1245
+app.get('/get/data/:ass', (req, res) => {
+    var query = req.query;
+    var filter = req.params.ass;
+    res.send('user id ' + query.database + query.type + filter);
+});
+
 // delete many
-app.post('/delete/many/', (req, res) => {
-    _delete.deleteMany(req, res)
+//http://localhost:4000/mongo/delete/many
+app.get('/:type/delete/many/', (req, res) => {
+    var type = req.params.type;
+    res.send('type ' + type);
+    //_delete.deleteMany(req, res)
 });
 
 // delete one
@@ -85,10 +95,13 @@ var limiter = new RateLimit({
     max: 15
 });
 
-const root = require('path').join(__dirname, 'client', 'build');
-app.use(limiter, express.static(root));
+//const root = require('path').join(__dirname, 'client', 'build');
+//app.use(limiter, express.static(root));
 app.get("*", (req, res) => {
-    res.sendFile('index.html', { root });
+    // res.sendFile('index.html', { root });
+    res.send('index.html');
+
+
 });
 
 const API_PORT = process.env.PORT || 4000;
