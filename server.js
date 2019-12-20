@@ -9,7 +9,7 @@ var _find = require('./find');
 var _get = require('./get');
 
 var RateLimit = require('express-rate-limit');
-const path = require('path');
+//const path = require('path');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -95,10 +95,10 @@ var limiter = new RateLimit({
     max: 15
 });
 
-//const root = require('path').join(__dirname, 'client', 'build');
-//app.use(limiter, express.static(root));
+const root = require('path').join(__dirname, 'client', 'build');
+app.use(limiter, express.static(root));
 app.get("*", (req, res) => {
-    // res.sendFile('index.html', { root });
+    res.sendFile('index.html', { root });
     res.send('index.html');
 
 
