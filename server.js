@@ -85,7 +85,7 @@ var limiter = new RateLimit({
     max: 15
 });
 
-app.use(limiter, express.static(path.join(__dirname, 'client/build')));
+app.use(limiter, '/static', express.static(path.join(__dirname, 'client/build')));
 app.get('*', function(req, res) {
     try{
         res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
