@@ -10,6 +10,7 @@ import PeopleIcon from '@material-ui/icons/People';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import Avatar from '@material-ui/core/Avatar';
 
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
@@ -125,6 +126,9 @@ const useStyles = makeStyles(theme => ({
     },
     appBarColor: {
         background : '#000'
+    },
+    marginLeft: {
+        marginLeft : 2
     },
 }));
 
