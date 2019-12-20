@@ -8,6 +8,8 @@ var _update = require('./update');
 var _find = require('./find');
 var _get = require('./get');
 
+var RateLimit = require('express-rate-limit');
+const path = require('path');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -76,6 +78,21 @@ app.post('/get/collections/', (req, res) => {
 // get databases
 app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
+});
+
+var limiter = new RateLimit({
+    windowMs: 60*1000, // 1 minute
+    max: 15
+});
+
+app.use(limiter, express.static(path.join(__dirname, 'client/build')));
+app.get('*', function(req, res) {
+    try{
+        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    } catch (e) {
+        console.log(e);
+    }
+
 });
 
 const API_PORT = process.env.PORT || 4000;

@@ -37,6 +37,10 @@
       "src": "/get/.*",
       "dest": "/server.js",
       "methods": ["POST"]
+    },
+    {
+      "src": "/.*",
+      "dest": "/server.js"
     }
   ]
 }
