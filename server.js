@@ -85,14 +85,10 @@ var limiter = new RateLimit({
     max: 15
 });
 
-app.use(limiter, express.static(path.join(__dirname, 'client/build')));
-app.get('*', function(req, res) {
-    try{
-        res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-    } catch (e) {
-        console.log(e);
-    }
-
+const root = require('path').join(__dirname, 'client', 'build');
+app.use(limiter, express.static(root));
+app.get("*", (req, res) => {
+    res.sendFile('index.html', { root });
 });
 
 const API_PORT = process.env.PORT || 4000;
