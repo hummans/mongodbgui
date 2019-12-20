@@ -97,11 +97,11 @@ var limiter = new RateLimit({
     max: 15
 });
 
-//const root = require('path').join(__dirname, 'client', 'build');
-//app.use(limiter, express.static(root));
+const root = require('path').join(__dirname, 'client', 'build');
+app.use(limiter, express.static(root));
 app.get("/editor/", (req, res) => {
-    //res.sendFile('index.html', { root });
-    res.send('index.html');
+    res.sendFile('index.html', { root });
+    //res.send('index.html');
 
 
 });
