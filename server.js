@@ -24,9 +24,10 @@ app.get('/get/data/:ass', (req, res) => {
 
 // delete many
 //http://localhost:4000/mongo/delete/many
-app.get('/:type/delete/many/', (req, res) => {
+app.get('/:type/delete/many', (req, res) => {
     var type = req.params.type;
-    res.send('type ' + type);
+    var myObj = {name: "Anna", age: 31, city: type};
+    res.send(myObj);
     //_delete.deleteMany(req, res)
 });
 
@@ -80,8 +81,9 @@ app.post('/find/some/', (req, res) => {
     _find.findSome(req, res)
 });
 
+
 // get collections
-app.post('/get/collections/', (req, res) => {
+app.post('/:type/get/collections/', (req, res) => {
     _get.getCollections(req, res)
 });
 
@@ -95,10 +97,10 @@ var limiter = new RateLimit({
     max: 15
 });
 
-const root = require('path').join(__dirname, 'client', 'build');
-app.use(limiter, express.static(root));
-app.get("*", (req, res) => {
-    res.sendFile('index.html', { root });
+//const root = require('path').join(__dirname, 'client', 'build');
+//app.use(limiter, express.static(root));
+app.get("/editor/", (req, res) => {
+    //res.sendFile('index.html', { root });
     res.send('index.html');
 
 
