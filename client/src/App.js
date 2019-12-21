@@ -10,10 +10,10 @@ function App() {
   return (
       <BrowserRouter>
         <Switch>
-            <Route path="/home" component={Home} exact/>
-            <Route path="/" component={Home} exact/>
+            <Route path="/home" component={Dashboard} exact/>
+            <Route path="/" component={Dashboard} exact/>
             <Route path="/about" component={About} exact/>
-            <Route path="/dashboard/:type" component={Dashboard} exact/>
+            <Route path="/dashboard/:type" component={Home} exact/>
         </Switch>
       </BrowserRouter>
   );
