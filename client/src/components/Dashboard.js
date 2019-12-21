@@ -207,11 +207,12 @@ function View() {
                                 <Paper className={classes.paper}>
                                     <Grid item xs={12}>
                                         <Toolbar>
-                                            <Button color="contained" color="primary">CREATE NEW DOCUMENT</Button>
                                             <Typography variant="h6" className={classes.title}>
                                                 {Auth.collection}
                                             </Typography>
-                                            <Button  variant="outlined" color="secondary" onClick={() => {resetCollection()}}>CLOSe COLLECTION</Button>
+                                            <Button variant="contained" color="primary" className='mr-2' >INSERT</Button>
+                                            <Button  variant="contained" color="secondary" onClick={() => {resetCollection()}}>CLOSE</Button>
+
                                         </Toolbar>
                                         <Paper className={classes.paper}>
                                             <FindAll credentials = {Auth}/>
