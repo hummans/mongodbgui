@@ -20,6 +20,12 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Cookies from 'universal-cookie';
 import SideBar from './SideBar';
+import FindAll from './FindAll';
+
+import Button from "@material-ui/core/Button";
+import List from "@material-ui/core/List";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import 'bootstrap/dist/css/bootstrap.css'
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -56,6 +62,11 @@ const useStyles = makeStyles(theme => ({
     },
     menuButtonHidden: {
         display: 'none',
+    },
+    createButton: {
+        marginTop: '0.5rem',
+        marginLeft: '0.5rem',
+        marginRight: '0.5rem'
     },
     title: {
         flexGrow: 1,
@@ -106,23 +117,34 @@ const useStyles = makeStyles(theme => ({
         marginLeft : 2
     },
 }));
-const Auth = {username: 'readmongo', password: 'clientmongo', cluster: 'cluster0-vdt7y', database: 'react2'};
+var Auth = {username: 'readmongo', password: 'clientmongo', cluster: 'cluster0-vdt7y', database: 'react2'};
 
 function View() {
     const classes = useStyles();
     const [open, setOpen] = React.useState(true);
+    const [collection, setCollection] = React.useState(false);
+    const [collectionName, setCollectionName] = React.useState('NULL');
+
     const handleDrawerOpen = () => {
         setOpen(true);
     };
     const handleDrawerClose = () => {
         setOpen(false);
     };
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
 
-    return (
-        <div className={classes.root}>
-            <CssBaseline />
-            <AppBar position="absolute" className={clsx(classes.appBarColor, classes.appBar, open && classes.appBarShift)}>
+    const handleToUpdate = (someArg) => {
+        setCollection(true);
+        setCollectionName(someArg);
+    };
+
+    const resetCollection = () => {
+        setCollection(false);
+    };
+
+
+    const appBar = () => {
+        return (
+            <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                 <Toolbar className={classes.toolbar}>
                     <IconButton
                         edge="start"
@@ -146,6 +168,11 @@ function View() {
                     </IconButton>
                 </Toolbar>
             </AppBar>
+        )
+    };
+
+    const drawerContainer = () => {
+        return (
             <Drawer
                 variant="permanent"
                 classes={{
@@ -158,35 +185,71 @@ function View() {
                     </IconButton>
                 </div>
                 <Divider />
-                    <SideBar credentials = {Auth}  />
+                <Button variant="contained" color="primary" disableElevation className={clsx(classes.createButton, !open && classes.menuButtonHidden)}>
+                    Create new Collection
+                </Button>
+                <SideBar credentials = {Auth} handleToUpdate={handleToUpdate.bind(this)} />
                 <Divider />
             </Drawer>
-            <main className={classes.content}>
-                <div className={classes.appBarSpacer} />
-                <Container maxWidth="lg" className={classes.container}>
-                    <Grid container spacing={3}>
-                        {/* Chart */}
-                        <Grid item xs={12} md={8} lg={9}>
-                            <Paper className={fixedHeightPaper}>
-                            </Paper>
+        )
+    };
+
+    const mainContainer = () => {
+        if(collection){
+            var Auth = {username: 'readmongo', password: 'clientmongo', cluster: 'cluster0-vdt7y', database: 'react2', collection: collectionName};
+            console.log(Auth.collectionName);
+            return (
+                <main className={classes.content}>
+                    <div className={classes.appBarSpacer} />
+                    <Container maxWidth="lg" className={classes.container}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+                                    <Grid item xs={12}>
+                                        <Toolbar>
+                                            <Button color="contained" color="primary">CREATE NEW DOCUMENT</Button>
+                                            <Typography variant="h6" className={classes.title}>
+                                                {Auth.collection}
+                                            </Typography>
+                                            <Button  variant="outlined" color="secondary" onClick={() => {resetCollection()}}>CLOSe COLLECTION</Button>
+                                        </Toolbar>
+                                        <Paper className={classes.paper}>
+                                            <FindAll credentials = {Auth}/>
+                                        </Paper>
+                                    </Grid>
+                                </Paper>
+                            </Grid>
                         </Grid>
-                        {/* Recent Deposits */}
-                        <Grid item xs={12} md={4} lg={3}>
-                            <Paper className={fixedHeightPaper}>
-                            </Paper>
+                    </Container>
+                </main>
+            )
+        } else {
+            return (
+                <main className={classes.content}>
+                    <div className={classes.appBarSpacer} />
+                    <Container maxWidth="lg" className={classes.container}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+                                    Some text
+                                </Paper>
+                            </Grid>
                         </Grid>
-                        {/* Recent Orders */}
-                        <Grid item xs={12}>
-                            <Paper className={classes.paper}>
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </main>
+                    </Container>
+                </main>
+            )
+        }
+    };
+
+    return (
+        <div className={classes.root}>
+            <CssBaseline />
+            {appBar()}
+            {drawerContainer()}
+            {mainContainer()}
         </div>
     );
 }
-
 
 class Dashboard extends Component {
     constructor(props) {
@@ -195,7 +258,7 @@ class Dashboard extends Component {
 
     render() {
         return (
-            <div className="App">
+            <div className='App'>
                 <View />
             </div>
         );

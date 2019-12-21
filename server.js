@@ -24,7 +24,7 @@ app.get('/get/data/:ass', (req, res) => {
 
 // delete many
 //http://localhost:4000/mongo/delete/many
-app.get('/:type/delete/many', (req, res) => {
+app.post('/:type/delete/many', (req, res) => {
     var type = req.params.type;
     var myObj = {name: "Anna", age: 31, city: type};
     res.send(myObj);
@@ -72,7 +72,7 @@ app.post('/find/one/', (req, res) => {
 });
 
 // find all
-app.post('/find/all/', (req, res) => {
+app.post('/:type/find/all/', (req, res) => {
     _find.findAll(req, res)
 });
 
@@ -81,12 +81,10 @@ app.post('/find/some/', (req, res) => {
     _find.findSome(req, res)
 });
 
-
 // get collections
 app.post('/:type/get/collections/', (req, res) => {
     _get.getCollections(req, res)
 });
-
 // get databases
 app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
@@ -101,9 +99,6 @@ const root = require('path').join(__dirname, 'client', 'build');
 app.use(limiter, express.static(root));
 app.get("/", (req, res) => {
     res.sendFile('index.html', { root });
-    //res.send('index.html');
-
-
 });
 
 const API_PORT = process.env.PORT || 4000;

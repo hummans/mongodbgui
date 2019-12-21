@@ -21,7 +21,7 @@ class GetList extends Component {
     renderListData(){
         axios
             .post(
-                "/mongo/get/collections",
+                "/mongo/find/all",
                 this.state.credentials,
             )
             .then(response => {
@@ -63,7 +63,7 @@ class GetList extends Component {
                                     <ListItemIcon>
                                         <StorageIcon />
                                     </ListItemIcon>
-                                    <ListItemText primary={item.name}/>
+                                    <ListItemText primary={JSON.stringify(item)}/>
                                 </ListItem>
                             )
                         })}
