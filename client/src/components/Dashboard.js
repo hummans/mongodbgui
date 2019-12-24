@@ -22,7 +22,7 @@ import Button from "@material-ui/core/Button";
 import 'bootstrap/dist/css/bootstrap.css'
 import About from "./About";
 
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({

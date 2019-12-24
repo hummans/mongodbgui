@@ -7,6 +7,7 @@ var _create = require('./create');
 var _update = require('./update');
 var _find = require('./find');
 var _get = require('./get');
+var auth = require('./auth');
 
 var RateLimit = require('express-rate-limit');
 //const path = require('path');
@@ -85,10 +86,21 @@ app.post('/find/some/', (req, res) => {
 app.post('/:type/get/collections/', (req, res) => {
     _get.getCollections(req, res)
 });
+
 // get databases
 app.post('/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
 });
+
+// auth
+app.post('/auth/signup/', (req, res) => {
+    auth.signup(req, res)
+});
+
+app.post('/auth/signin/', (req, res) => {
+    auth.singin(req, res)
+});
+
 
 var limiter = new RateLimit({
     windowMs: 60*1000, // 1 minute

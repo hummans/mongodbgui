@@ -3,4 +3,5 @@ module.exports = app => {
     app.use(proxy('/mongo/delete/many', { target: "http://localhost:4000/" }));
     app.use(proxy('/mongo/get/collections', { target: "http://localhost:4000/"}));
     app.use(proxy('/mongo/find/all', { target: "http://localhost:4000/"}));
+    app.use(proxy('/auth/signup', { target: "http://localhost:4000/"}));
 };
