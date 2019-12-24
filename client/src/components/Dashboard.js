@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
-import Box from '@material-ui/core/Box';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -12,20 +11,18 @@ import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import SettingsIcon from '@material-ui/icons/Settings';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import Cookies from 'universal-cookie';
 import SideBar from './SideBar';
 import FindAll from './FindAll';
-
 import Button from "@material-ui/core/Button";
-import List from "@material-ui/core/List";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
 import 'bootstrap/dist/css/bootstrap.css'
+import About from "./About";
+
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -117,7 +114,7 @@ const useStyles = makeStyles(theme => ({
         marginLeft : 2
     },
 }));
-var Auth = {username: 'readmongo', password: 'clientmongo', cluster: 'cluster0-vdt7y', database: 'react2'};
+var Auth = {username: 'root', password: '1234', cluster: 'cluster0-cgtwf', database: 'sample'};
 
 function View() {
     const classes = useStyles();
@@ -135,6 +132,11 @@ function View() {
     const handleToUpdate = (someArg) => {
         setCollection(true);
         setCollectionName(someArg);
+    };
+
+    const documentName = (someArg) => {
+        alert(someArg);
+       return  <Route path="/about" component={About} exact/>;
     };
 
     const resetCollection = () => {
@@ -196,7 +198,8 @@ function View() {
 
     const mainContainer = () => {
         if(collection){
-            var Auth = {username: 'readmongo', password: 'clientmongo', cluster: 'cluster0-vdt7y', database: 'react2', collection: collectionName};
+            var Auth = {username: 'root', password: '1234', cluster: 'cluster0-cgtwf', database: 'sample', collection: collectionName};
+            console.log(Auth[1]);
             console.log(Auth.collectionName);
             return (
                 <main className={classes.content}>
@@ -215,7 +218,7 @@ function View() {
 
                                         </Toolbar>
                                         <Paper className={classes.paper}>
-                                            <FindAll credentials = {Auth}/>
+                                            <FindAll credentials = {Auth} documentName={documentName.bind(this)}/>
                                         </Paper>
                                     </Grid>
                                 </Paper>

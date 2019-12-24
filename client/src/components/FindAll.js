@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 import LinearProgress from "@material-ui/core/LinearProgress";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import axios from 'axios';
-import FolderIcon from '@material-ui/icons/Folder';
 import DeleteIcon from '@material-ui/icons/Delete';
 import 'bootstrap/dist/css/bootstrap.css'
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
 
 class GetList extends Component {
     constructor(props) {
@@ -48,7 +44,7 @@ class GetList extends Component {
     }
 
     render() {
-        var handleToUpdate  =   this.props.handleToUpdate;
+        var documentName  =   this.props.documentName;
         var isRender = this.state.render;
         if (!isRender) {
             return (
@@ -65,19 +61,13 @@ class GetList extends Component {
                           aria-label="main mailbox folders">
                         {this.state.data.data.map((item, key) => {
                             return (
-
-                                <ListItem button key={key} onClick={() => {handleToUpdate(item.name)}}>
+                                <ListItem button key={key} onClick={() => {documentName(item._id)}}>
                                     <ListItemAvatar>
                                         <Avatar>
-                                            <FolderIcon />
+                                            <DeleteIcon />
                                         </Avatar>
                                     </ListItemAvatar>
-                                    <ListItemText primary={JSON.stringify(item)} />
-                                    <ListItemSecondaryAction>
-                                        <IconButton edge="end" aria-label="delete">
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
+                                    <ListItemText primary={item._id} />
                                 </ListItem>
                             )
                         })}
@@ -87,24 +77,24 @@ class GetList extends Component {
         }
     }
 }
-class SideBar extends Component {
+
+class Documents extends Component {
     constructor(props) {
         super(props);
     }
 
-    handleToUpdate(someArg){
-        var handleToUpdate  =   this.props.handleToUpdate;
-        handleToUpdate(someArg);
-
+    documentName(someArg){
+        var documentName  =   this.props.documentName;
+        documentName(someArg);
     }
 
     render() {
-        var handleToUpdate  =   this.handleToUpdate;
+        var documentName  =   this.documentName;
         return (
-            <div className="SideBar">
-                    <GetList credentials={this.props.credentials}  handleToUpdate = {handleToUpdate.bind(this)}/>
+            <div className="Documents">
+                    <GetList credentials={this.props.credentials}  documentName = {documentName.bind(this)}/>
             </div>
         );
     }
 }
-export default SideBar;
+export default Documents;

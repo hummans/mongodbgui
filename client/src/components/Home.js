@@ -1,62 +1,66 @@
-import React, { Component } from 'react';
-import LinearProgress from "@material-ui/core/LinearProgress";
-class List extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: [],
-            render: false
-        };
+import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
 
-    }
+import { Link } from 'react-router-dom';
 
-    renderListData(){
-        fetch('/mongo/delete/many')
-            .then((response) => response.json())
-            .then((responseJson) => {
-                console.log(responseJson);
-                try {
-                    this.setState({data: responseJson, render: true});
-                } catch (e) {
-                    console.log(e);
-                }
-            }).catch((error) => {
-            console.error(error);
-        });
-    }
-
-    componentDidMount(){
-        this.renderListData();
-    }
-
-    render() {
-        var isRender = this.state.render;
-        if (!isRender) {
-            return (
-                <div className="App">
-                    <div className=" bg-white w-100">
-                        <LinearProgress color="secondary" />
-                    </div>
-                </div>
-            )
-        } else {
-            return (
-                <div className="App">
-                    {this.state.data.name}
-                </div>
-            );
-        }
-    }
-}
-
-function Home() {
+function Copyright() {
     return (
-        <div className="App">
-            <div className="bg-white rounded shadow-lg m-2 p-4">
-                <List />
-            </div>
-        </div>
+        <Typography variant="body2" color="textSecondary" align="center">
+            {'Copyright © '}
+            <Link color="inherit" to="https://material-ui.com/">
+                Your Website
+            </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
     );
 }
 
-export default Home;
+const useStyles = makeStyles(theme => ({
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    avatar: {
+        margin: theme.spacing(1),
+        backgroundColor: theme.palette.secondary.main,
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+}));
+
+export default function SignIn() {
+    const classes = useStyles();
+
+    return (
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Link to="/signin" variant="body2">
+                    Sign In
+                </Link>
+            </div>
+            <Box mt={8}>
+                <Copyright />
+            </Box>
+        </Container>
+    );
+}

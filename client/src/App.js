@@ -3,17 +3,19 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './App.css';
 
 import Home from './components/Home';
-import About from './components/About';
+import SignIn from './components/SignIn';
+import SignUp from './components/SignUp';
+
 import Dashboard from './components/Dashboard';
 
 function App() {
   return (
       <BrowserRouter>
         <Switch>
-            <Route path="/home" component={Dashboard} exact/>
-            <Route path="/" component={Dashboard} exact/>
-            <Route path="/about" component={About} exact/>
-            <Route path="/dashboard/:type" component={Home} exact/>
+            <Route path="/signin" component={SignIn} exact/>
+            <Route path="/signup" component={SignUp} exact/>
+            <Route path="/" component={Home} exact/>
+            <Route path="/dashboard/:type" component={Dashboard} exact/>
         </Switch>
       </BrowserRouter>
   );
