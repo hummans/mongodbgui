@@ -13,11 +13,14 @@ import Copyright from './Copyright';
 import SignInStyle from '../Styles/SnackBar'
 import axios from "axios";
 import LinearProgress from "@material-ui/core/LinearProgress";
+
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
 import clsx from 'clsx';
+
 import ErrorIcon from '@material-ui/icons/Error';
+
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 
@@ -55,7 +58,10 @@ function ConnectionString() {
             if(response !== null){
                 if(response === 'ok'){
                     return (
-                        <Redirect to='/mongo/dashboard'  />
+                        <Redirect to={{
+                            pathname: '/mongo/cluster',
+                            state: { connection: connectionString }
+                        }} />
                     )
                 } else {
                     const variantIcon = {
@@ -106,6 +112,8 @@ function ConnectionString() {
                 setIsSubmit(false);
             });
     };
+
+
     /*mongodb+srv://root:1234@cluster0-cgtwf.mongodb.net/test?retryWrites=true&w=majority */
     return (
         <Container component="main" maxWidth="md">

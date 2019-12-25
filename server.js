@@ -88,7 +88,7 @@ app.post('/:type/get/collections/', (req, res) => {
 });
 
 // get databases
-app.post('/get/databases/', (req, res) => {
+app.post('/:type/get/databases/', (req, res) => {
     _get.getDatabases(req, res)
 });
 

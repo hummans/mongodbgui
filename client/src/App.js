@@ -10,6 +10,7 @@ import SignUp from './components/SignUp';
 import GettingStarted from './components/GettingStarted';
 import Connection from './components/Connection';
 
+import Cluster from './components/Cluster';
 import Dashboard from './components/Dashboard';
 
 function App() {
@@ -18,7 +19,8 @@ function App() {
         <Switch>
             <Route path="/" component={GettingStarted} exact/>
             <Route path="/:connection" component={Connection} exact/>
-            <Route path="/:connection/databases" component={Dashboard} exact/>
+            <Route path="/:connection/cluster" component={Cluster} exact/>
+            <Route path="/:connection/:databases/collections" component={Dashboard} exact/>
         </Switch>
       </BrowserRouter>
   );

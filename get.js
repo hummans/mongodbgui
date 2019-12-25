@@ -30,7 +30,7 @@ module.exports = {
     },
     getDatabases: function (req, res) {
         var auth = Object.entries(req.body);
-
+        console.log(req.body);
         var url = "mongodb+srv://username:password@cluster.mongodb.net/test?retryWrites=true&w=majority";
         var replace = {
             username:auth[0][1],
