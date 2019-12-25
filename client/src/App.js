@@ -8,8 +8,8 @@ import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 
 import GettingStarted from './components/GettingStarted';
-import Connection from './components/Connection';
 
+import Connection from './components/Connection';
 import Cluster from './components/Cluster';
 import Dashboard from './components/Dashboard';
 

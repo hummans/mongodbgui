@@ -22,6 +22,9 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListSubheader from '@material-ui/core/ListSubheader';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import Fade from '@material-ui/core/Fade';
+import Zoom from '@material-ui/core/Zoom';
+
 class Cluster extends Component {
     constructor(props) {
         super(props);
@@ -69,6 +72,7 @@ class Cluster extends Component {
     render() {
         if(this.state.submit){
             return (
+                <Fade in={true}>
                 <Container component="main" maxWidth="md">
                     <CssBaseline />
                     {this.loadProgressBar()}
@@ -88,9 +92,11 @@ class Cluster extends Component {
                         <Copyright />
                     </Box>
                 </Container>
+                </Fade>
             );
         } else {
             return (
+                <Fade in={true}>
                 <Container component="main" maxWidth="md">
                     <CssBaseline />
                     <Grid container justify="flex-start" className='mt-4'>
@@ -131,6 +137,7 @@ class Cluster extends Component {
                         <Copyright />
                     </Box>
                 </Container>
+                </Fade>
             );
         }
     }
