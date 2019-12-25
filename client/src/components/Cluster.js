@@ -18,90 +18,121 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import LinearProgress from "@material-ui/core/LinearProgress";
 import axios from "axios";
+import DeleteIcon from '@material-ui/icons/Delete';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+class Cluster extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            data : [],
+            submit: false,
+        };
+    }
 
-const useStyles = makeStyles(SignInStyle);
-
-function GetCluster(props) {
-    const classes = useStyles();
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-    const [isSubmit, setIsSubmit] = useState(false);
-
-    const handleListItemClick = (event, index) => {
-        setSelectedIndex(index);
-        setIsSubmit(false)
-    };
-
-    const loadProgressBar = () => {
-        if(isSubmit){
+    loadProgressBar(){
+        if(this.state.submit){
             return (
                 <LinearProgress color="secondary" />
             )
         }
     };
 
-    const getDatabases = (url)=> {
-        console.log(url)
-    };
+    getCluster (url){
+        this.setState({
+            submit: true
+        });
+        axios
+            .post(
+                "/mongo/get/databases/",
+                {url:  url},
+            )
+            .then(response => {
+                this.setState({
+                    data: response.data.databases,
+                    submit: false
+                });
+            })
+            .catch(error => {
+                console.log(error);
+                this.setState({
+                    submit: false
+                });
+            });
+    }
 
-    const render = ()=> {
-        return(
-            <Container component="main" maxWidth="md">
-                <CssBaseline />
-                {loadProgressBar()}
-                <Grid container justify="flex-start" className='mt-4'>
-                    <Grid item>
-                        <Link to={'/mongo/'} variant="h5">
-                            <IconButton>
-                                <ChevronLeftIcon />
-                            </IconButton>
-                        </Link>
-                    </Grid>
-                </Grid>
-                <div className={classes.paper}>
-                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                        Databases
-                    </Typography>
-                    <List component="nav" aria-label="secondary mailbox folder">
-                        <ListItem
-                            button
-                            selected={selectedIndex === 2}
-                            onClick={event => handleListItemClick(event, 2)}
-                        >
-                            <ListItemText primary="Trash" />
-                        </ListItem>
-                        <ListItem
-                            button
-                            selected={selectedIndex === 3}
-                            onClick={event => handleListItemClick(event, 3)}
-                        >
-                            <ListItemText primary="Spam" />
-                        </ListItem>
-                    </List>
-                </div>
-                <Box mt={8}>
-                    <Copyright />
-                </Box>
-            </Container>
-        );
-    };
-
-    return (
-        render()
-    );
-}
-
-class Cluster extends Component {
-    constructor(props) {
-        super(props);
+    componentDidMount(){
+        this.getCluster(this.props.location.state.connection);
     }
 
     render() {
-        return (
-            <div>
-                <GetCluster connection={this.props.location.state.connection} />
-            </div>
-
-        );
+        if(this.state.submit){
+            return (
+                <Container component="main" maxWidth="md">
+                    <CssBaseline />
+                    {this.loadProgressBar()}
+                    <Grid container justify="flex-start" className='mt-4'>
+                        <Grid item>
+                            <Link to={'/mongo/'} variant="h5">
+                                <IconButton>
+                                    <ChevronLeftIcon />
+                                </IconButton>
+                            </Link>
+                        </Grid>
+                    </Grid>
+                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        Please wait
+                    </Typography>
+                    <Box mt={8}>
+                        <Copyright />
+                    </Box>
+                </Container>
+            );
+        } else {
+            return (
+                <Container component="main" maxWidth="md">
+                    <CssBaseline />
+                    <Grid container justify="flex-start" className='mt-4'>
+                        <Grid item xs>
+                            <Link to={'/mongo/'} variant="h5">
+                                <IconButton>
+                                    <ChevronLeftIcon />
+                                </IconButton>
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <Link to={'/mongo/'} variant="h5">
+                                <IconButton>
+                                    <AddCircleOutlineIcon />
+                                </IconButton>
+                            </Link>
+                        </Grid>
+                    </Grid>
+                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        Cluster
+                    </Typography>
+                    <List component="nav" aria-label="secondary mailbox folders">
+                        {this.state.data.map((item, key) => {
+                            return (
+                                    <ListItem button key={key} component={Link} to={'/mongo/' + item.name + '/collections/'}>
+                                        <ListItemText
+                                            primary={item.name}/>
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge="end" aria-label="delete">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                            )
+                        })}
+                    </List>
+                    <Box mt={8}>
+                        <Copyright />
+                    </Box>
+                </Container>
+            );
+        }
     }
 }
 

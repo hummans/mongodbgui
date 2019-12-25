@@ -23,6 +23,7 @@ import ErrorIcon from '@material-ui/icons/Error';
 
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
+import Paper from '@material-ui/core/Paper';
 
 import 'bootstrap/dist/css/bootstrap.css'
 
@@ -37,10 +38,9 @@ export default class Connection extends Component {
 
     }
 
-
     render() {
         return (
-            <ConnectionString type={this.props.match.params.connection}/>
+            <ConnectionString />
         );
     }
 }
@@ -53,22 +53,16 @@ function ConnectionString() {
     const [isSubmit, setIsSubmit] = useState(false);
 
     const showResponse = () => {
-        console.log(response);
+        const variantIcon = {
+            warning: WarningIcon,
+            error: ErrorIcon,
+        };
+
+        const Icon = variantIcon['error'];
         if(isResponse){
             if(response !== null){
-                if(response === 'ok'){
-                    return (
-                        <Redirect to={{
-                            pathname: '/mongo/cluster',
-                            state: { connection: connectionString }
-                        }} />
-                    )
-                } else {
-                    const variantIcon = {
-                        warning: WarningIcon,
-                        error: ErrorIcon,
-                    };
-                    const Icon = variantIcon['error'];
+                if(response === 'ok'){}
+                else {
                     return (
                         <SnackbarContent
                             aria-describedby="client-snackbar"
@@ -94,6 +88,54 @@ function ConnectionString() {
         }
     };
 
+    const showInput = () => {
+        if(isResponse && response !== null && response === 'ok') {
+            return (
+                <div className={classes.paper}>
+                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        <Link to={{pathname: '/mongo/cluster', state: {connection: connectionString}}}>Continue</Link>
+                    </Typography>
+                    <Typography component="h5" variant="h5" align="center" color="textPrimary" gutterBottom>
+                        The connection string {connectionString} is valid
+                    </Typography>
+                </div>
+            )
+        } else {
+            return (
+                <div className={classes.paper}>
+                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        Connection string
+                    </Typography>
+                    <form className={classes.form} noValidate onSubmit={(e) => {
+                        submit(e)
+                    }}>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="text"
+                            label="URL"
+                            name="text"
+                            autoComplete="text"
+                            autoFocus
+                            onChange={e => setConnectionString(e.target.value)}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Connect
+                        </Button>
+                    </form>
+                </div>
+            )
+        }
+    };
+
     const submit = (e)=> {
         e.preventDefault();
         setIsSubmit(true);
@@ -113,7 +155,6 @@ function ConnectionString() {
             });
     };
 
-
     /*mongodb+srv://root:1234@cluster0-cgtwf.mongodb.net/test?retryWrites=true&w=majority */
     return (
         <Container component="main" maxWidth="md">
@@ -129,34 +170,7 @@ function ConnectionString() {
                     </Link>
                 </Grid>
             </Grid>
-            <div className={classes.paper}>
-                <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                    Connection string
-                </Typography>
-                <form className={classes.form} noValidate onSubmit={(e) => {submit(e)}}>
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="text"
-                        label="URL"
-                        name="text"
-                        autoComplete="text"
-                        autoFocus
-                        onChange={e => setConnectionString(e.target.value)}
-                    />
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        className={classes.submit}
-                    >
-                        Connect
-                    </Button>
-                </form>
-            </div>
+            {showInput()}
             <Box mt={8}>
                 <Copyright />
             </Box>
