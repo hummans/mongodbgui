@@ -93,13 +93,10 @@ app.post('/get/databases/', (req, res) => {
 });
 
 // auth
-app.post('/auth/signup/', (req, res) => {
-    auth.signup(req, res)
+app.post('/auth/check/', (req, res) => {
+    auth.check(req, res)
 });
 
-app.post('/auth/signin/', (req, res) => {
-    auth.singin(req, res)
-});
 
 
 var limiter = new RateLimit({

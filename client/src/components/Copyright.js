@@ -10,7 +10,6 @@ export default function Copyright() {
                 NoSQL Editor
             </Link>{' '}
             {new Date().getFullYear()}
-            {'.'}
         </Typography>
     );
 }

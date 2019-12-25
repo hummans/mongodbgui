@@ -14,7 +14,7 @@ import Container from '@material-ui/core/Container';
 
 import { Link } from 'react-router-dom';
 import Copyright from './Copyright';
-import SignInStyle from '../Styles/SignIn'
+import SignInStyle from '../Styles/SnackBar'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 const useStyles = makeStyles(SignInStyle);
