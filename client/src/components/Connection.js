@@ -1,179 +1,202 @@
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+
 import Container from '@material-ui/core/Container';
 
 import { Link, Redirect  } from 'react-router-dom';
 import Copyright from './Copyright';
-import SignInStyle from '../Styles/SnackBar'
+
 import axios from "axios";
 import LinearProgress from "@material-ui/core/LinearProgress";
 
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 
-import clsx from 'clsx';
-
-import ErrorIcon from '@material-ui/icons/Error';
-
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import Paper from '@material-ui/core/Paper';
 
 import 'bootstrap/dist/css/bootstrap.css'
-
-const useStyles = makeStyles(SignInStyle);
 
 export default class Connection extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            render: false
+            submit: false,
+            url: null,
+            response: null,
+
         };
 
     }
 
-    render() {
-        return (
-            <ConnectionString />
-        );
-    }
-}
-
-function ConnectionString() {
-    const classes = useStyles();
-    const [connectionString, setConnectionString] = useState(null);
-    const [response, setResponse] = useState(null);
-    const [isResponse, setIsResponse] = useState(false);
-    const [isSubmit, setIsSubmit] = useState(false);
-
-    const showResponse = () => {
-        const variantIcon = {
-            warning: WarningIcon,
-            error: ErrorIcon,
-        };
-
-        const Icon = variantIcon['error'];
-        if(isResponse){
-            if(response !== null){
-                if(response === 'ok'){}
-                else {
-                    return (
-                        <SnackbarContent
-                            aria-describedby="client-snackbar"
-                            className={clsx(classes.error, classes.mt5)}
-                            message={
-                                <span id="client-snackbar" className={"display: 'flex', alignItems:'center'"}>
-                                    <Icon className={clsx(classes.iconVariant)} />
-                                    {'Error: Invalid connections string format, a valid format is available in your mongoDB Atlas cluster'}
-                                </span>
-                            }
-                        />
-                    )
-                }
-            }
-        }
-    };
-
-    const loadProgressBar = () => {
-        if(isSubmit){
+    progressbar () {
+        if(this.state.submit){
             return (
                 <LinearProgress color="secondary" />
             )
         }
     };
 
-    const showInput = () => {
-        if(isResponse && response !== null && response === 'ok') {
-            return (
-                <div className={classes.paper}>
-                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                        <Link to={{pathname: '/mongo/cluster', state: {connection: connectionString}}}>Continue</Link>
-                    </Typography>
-                    <Typography component="h5" variant="h5" align="center" color="textPrimary" gutterBottom>
-                        The connection string {connectionString} is valid
-                    </Typography>
-                </div>
-            )
+    check (value){
+        if(value === null){
+            return ('Connection string is empty');
         } else {
-            return (
-                <div className={classes.paper}>
-                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                        Connection string
-                    </Typography>
-                    <form className={classes.form} noValidate onSubmit={(e) => {
-                        submit(e)
-                    }}>
-                        <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="text"
-                            label="URL"
-                            name="text"
-                            autoComplete="text"
-                            autoFocus
-                            onChange={e => setConnectionString(e.target.value)}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Connect
-                        </Button>
-                    </form>
-                </div>
-            )
+            return value;
         }
-    };
+    }
 
-    const submit = (e)=> {
+    submit (e) {
         e.preventDefault();
-        setIsSubmit(true);
+        this.setState({
+            submit: true
+        });
         axios
             .post(
                 "/auth/check",
-                {url:  connectionString},
+                {url: this.state.url},
             )
             .then(response => {
-                setResponse(response.data.status);
-                setIsResponse(true);
-                setIsSubmit(false);
+                this.setState({
+                    submit: false,
+                    render: true,
+                    response: response.data.status
+                });
+                console.log(response);
             })
             .catch(error => {
-                setResponse(error);
-                setIsSubmit(false);
+                this.setState({
+                    submit: false,
+                    render: true,
+                    response: error
+                });
             });
     };
 
-    /*mongodb+srv://root:1234@cluster0-cgtwf.mongodb.net/test?retryWrites=true&w=majority */
-    return (
-        <Container component="main" maxWidth="md">
-            <CssBaseline />
-            {loadProgressBar()}
-            {showResponse()}
-            <Grid container justify="flex-start" className='mt-4'>
-                <Grid item>
-                    <Link to={'/'} variant="h5">
-                        <IconButton>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Link>
-                </Grid>
-            </Grid>
-            {showInput()}
-            <Box mt={8}>
-                <Copyright />
-            </Box>
-        </Container>
-    );
+    render() {
+        if (this.state.submit) {
+            return (
+                <Container component="main" maxWidth="md">
+                    <CssBaseline/>
+                    {this.progressbar()}
+                    <Grid container justify="flex-start" className='mt-4'>
+                        <Grid item>
+                            <Link to={'/'} variant="h5">
+                                <IconButton>
+                                    <ChevronLeftIcon/>
+                                </IconButton>
+                            </Link>
+                        </Grid>
+                    </Grid>
+                    <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                        Validating the string
+                    </Typography>
+                    <Box mt={8}>
+                        <Copyright/>
+                    </Box>
+                </Container>
+            );
+        } else {
+            if(this.state.response === 'ok'){
+                return (
+                    <Redirect to={{pathname: '/mongo/cluster', state: {url: this.state.url}}}>Continue</Redirect>
+                )
+            } else if (this.state.response === 'error'){
+                return (
+                    <Container component="main" maxWidth="md">
+                        <CssBaseline />
+                        <Grid container justify="flex-start" className='mt-4'>
+                            <Grid item>
+                                <Link to={'/'} variant="h5">
+                                    <IconButton >
+                                        <ChevronLeftIcon />
+                                    </IconButton>
+                                </Link>
+                            </Grid>
+                        </Grid>
+                        <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                            Connection string is not valid
+                        </Typography>
+                        <form noValidate onSubmit={(e) => {
+                            this.submit(e)
+                        }}>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="text"
+                                label="URL"
+                                name="text"
+                                autoComplete="text"
+                                autoFocus
+                                value={this.check(this.state.url)}
+                                onChange={e => this.setState({
+                                    url: e.target.value
+                                })}
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary">
+                                Connect
+                            </Button>
+                        </form>
+                        <Box mt={8}>
+                            <Copyright />
+                        </Box>
+                    </Container>
+                );
+            } else {
+                return (
+                    <Container component="main" maxWidth="md">
+                        <CssBaseline />
+                        <Grid container justify="flex-start" className='mt-4'>
+                            <Grid item>
+                                <Link to={'/'} variant="h5">
+                                    <IconButton>
+                                        <ChevronLeftIcon />
+                                    </IconButton>
+                                </Link>
+                            </Grid>
+                        </Grid>
+                        <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                            Connection string
+                        </Typography>
+                        <form noValidate onSubmit={(e) => {
+                            this.submit(e)
+                        }}>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="text"
+                                label="URL"
+                                name="text"
+                                autoComplete="text"
+                                autoFocus
+                                onChange={e => this.setState({
+                                    url: e.target.value
+                                })}
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary">
+                                Connect
+                            </Button>
+                        </form>
+                        <Box mt={8}>
+                            <Copyright />
+                        </Box>
+                    </Container>
+                );
+            }
+        }
+    }
 }

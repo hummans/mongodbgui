@@ -1,14 +1,12 @@
-import React, {Component, useState} from 'react';
+import React, {Component} from 'react';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
 import { Link } from 'react-router-dom';
 import Copyright from './Copyright';
-import SignInStyle from '../Styles/SnackBar'
 
 import IconButton from "@material-ui/core/IconButton";
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -20,16 +18,15 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import axios from "axios";
 import DeleteIcon from '@material-ui/icons/Delete';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Fade from '@material-ui/core/Fade';
-import Zoom from '@material-ui/core/Zoom';
 
 class Cluster extends Component {
     constructor(props) {
         super(props);
         this.state = {
             data : [],
+            url: null,
             submit: false,
         };
     }
@@ -44,7 +41,8 @@ class Cluster extends Component {
 
     getCluster (url){
         this.setState({
-            submit: true
+            submit: true,
+            url: url,
         });
         axios
             .post(
@@ -66,7 +64,7 @@ class Cluster extends Component {
     }
 
     componentDidMount(){
-        this.getCluster(this.props.location.state.connection);
+        this.getCluster(this.props.location.state.url);
     }
 
     render() {
@@ -121,7 +119,7 @@ class Cluster extends Component {
                     <List component="nav" aria-label="secondary mailbox folders">
                         {this.state.data.map((item, key) => {
                             return (
-                                    <ListItem button key={key} component={Link} to={'/mongo/' + item.name + '/collections/'}>
+                                    <ListItem button key={key} component={Link} to={{pathname: '/mongo/collections/', state: {url: this.state.url, database: item.name}}}>
                                         <ListItemText
                                             primary={item.name}/>
                                         <ListItemSecondaryAction>

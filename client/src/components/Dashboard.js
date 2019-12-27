@@ -1,36 +1,57 @@
-import React, {Component} from 'react';
-import clsx from 'clsx';
+import React, { useState, useEffect } from 'react';
+import { useLocation} from "react-router";
+
 import { makeStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
+import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
+import ListItem from '@material-ui/core/ListItem';
+
+import ListItemText from '@material-ui/core/ListItemText';
+
+import LinearProgress from "@material-ui/core/LinearProgress";
+import axios from "axios";
+
+import IconButton from "@material-ui/core/IconButton";
+
+import RefreshIcon from '@material-ui/icons/Refresh';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+
+import {Link} from "react-router-dom";
+import ListSubheader from "@material-ui/core/ListSubheader";
+
+import Fade from "@material-ui/core/Fade";
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import GitHubIcon from '@material-ui/icons/GitHub';
-import SettingsIcon from '@material-ui/icons/Settings';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
-import SideBar from './SideBar';
-import FindAll from './FindAll';
+import clsx from 'clsx';
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import DeleteIcon from '@material-ui/icons/Delete';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "@material-ui/core/Button";
-import 'bootstrap/dist/css/bootstrap.css'
-import About from "./About";
-
-import { Route } from 'react-router-dom';
+import ReactJson from 'react-json-view'
 
 const drawerWidth = 240;
+
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
     },
-    toolbar: {
-        paddingRight: 24, // keep right padding when drawer closed
+    appBar: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
     },
     toolbarIcon: {
         display: 'flex',
@@ -39,235 +60,294 @@ const useStyles = makeStyles(theme => ({
         padding: '0 8px',
         ...theme.mixins.toolbar,
     },
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-    },
-    appBarShift: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    menuButton: {
-        marginRight: 36,
-    },
-    menuButtonHidden: {
-        display: 'none',
-    },
-    createButton: {
-        marginTop: '0.5rem',
-        marginLeft: '0.5rem',
-        marginRight: '0.5rem'
-    },
-    title: {
-        flexGrow: 1,
-    },
     drawerPaper: {
-        position: 'relative',
-        whiteSpace: 'nowrap',
         width: drawerWidth,
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
     },
-    drawerPaperClose: {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-            width: theme.spacing(9),
-        },
-    },
-    appBarSpacer: theme.mixins.toolbar,
+    toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
         height: '100vh',
         overflow: 'auto',
     },
+    menuButton: {
+        marginRight: theme.spacing(1),
+    },
+    refreshButton: {
+        marginLeft: theme.spacing(2),
+    },
     container: {
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
     },
-    paper: {
-        padding: theme.spacing(2),
-        display: 'flex',
-        overflow: 'auto',
-        flexDirection: 'column',
-    },
     fixedHeight: {
         height: 240,
     },
-    appBarColor: {
-        background : '#1976d2'
-    },
-    marginLeft: {
-        marginLeft : 2
-    },
 }));
-var Auth = {username: 'root', password: '1234', cluster: 'cluster0-cgtwf', database: 'sample'};
 
-function View() {
+
+function Dashboard() {
     const classes = useStyles();
-    const [open, setOpen] = React.useState(true);
-    const [collection, setCollection] = React.useState(false);
-    const [collectionName, setCollectionName] = React.useState('NULL');
+    const location = useLocation();
 
-    const handleDrawerOpen = () => {
+    // misc
+    const [render, setRender] = useState(false);
+    const [url, setUrl] = useState(null);
+    const [database, setDatabase] = useState(null);
+
+    // collections
+    const [submitCollections, setSubmitCollections] = useState(false);
+    const [loadingCollections, setLoadingCollections] = useState(false);
+    const [collections, setCollections] = useState(null);
+
+    // documents
+    const [submitDocuments, setSubmitDocuments] = useState(false);
+    const [loadingDocuments, setLoadingDocuments] = useState(false);
+    const [documents, setDocuments] = useState(null);
+
+    // document
+    const [submitRow, setSubmitRow] = useState(false);
+    const [loadingRow, setLoadingRow] = useState(false);
+    const [row, setRow] = useState(null);
+
+
+    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+    // dialog
+    const [open, setOpen] = React.useState(false);
+    const [id, setId] = React.useState(null);
+    const [scroll, setScroll] = React.useState(null);
+
+    const handleClickOpen = (id, scrollType) => {
         setOpen(true);
+        setId(id);
+        setScroll(scrollType);
     };
-    const handleDrawerClose = () => {
+
+    const handleClose = () => {
         setOpen(false);
     };
 
-    const handleToUpdate = (someArg) => {
-        setCollection(true);
-        setCollectionName(someArg);
-    };
-
-    const documentName = (someArg) => {
-        alert(someArg);
-       return  <Route path="/about" component={About} exact/>;
-    };
-
-    const resetCollection = () => {
-        setCollection(false);
-    };
+    const descriptionElementRef = React.useRef(null);
+    React.useEffect(() => {
+        if (open) {
+            const { current: descriptionElement } = descriptionElementRef;
+            if (descriptionElement !== null) {
+                descriptionElement.focus();
+            }
+        }
+    }, [open]);
 
 
-    const appBar = () => {
-        return (
-            <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
-                <Toolbar className={classes.toolbar}>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        className={clsx(classes.menuButton, open && classes.menuButtonHidden)}>
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                        NoSQL Editor
-                    </Typography>
-                    <IconButton color="inherit">
-                        <AccountCircleIcon />
-                    </IconButton>
-                    <IconButton color="inherit">
-                        <SettingsIcon />
-                    </IconButton>
-                    <IconButton color="inherit">
-                        <GitHubIcon />
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
-        )
-    };
+    useEffect(() => {
+        // misc
+        setUrl(location.state.url);
+        setDatabase(location.state.database);
+        setRender(true);
+    }, []);
 
-    const drawerContainer = () => {
-        return (
-            <Drawer
-                variant="permanent"
-                classes={{
-                    paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                }}
-                open={open}>
-                <div className={classes.toolbarIcon}>
-                    <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </div>
-                <Divider />
-                <Button variant="contained" color="primary" disableElevation className={clsx(classes.createButton, !open && classes.menuButtonHidden)}>
-                    Create new Collection
-                </Button>
-                <SideBar credentials = {Auth} handleToUpdate={handleToUpdate.bind(this)} />
-                <Divider />
-            </Drawer>
-        )
-    };
-
-    const mainContainer = () => {
-        if(collection){
-            var Auth = {username: 'root', password: '1234', cluster: 'cluster0-cgtwf', database: 'sample', collection: collectionName};
-            console.log(Auth[1]);
-            console.log(Auth.collectionName);
+    // collections
+    const renderCollections = () => {
+        if(loadingCollections){
             return (
-                <main className={classes.content}>
-                    <div className={classes.appBarSpacer} />
-                    <Container maxWidth="lg" className={classes.container}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Paper className={classes.paper}>
-                                    <Grid item xs={12}>
-                                        <Toolbar>
-                                            <Typography variant="h6" className={classes.title}>
-                                                {Auth.collection}
-                                            </Typography>
-                                            <Button variant="contained" color="primary" className='mr-2' >INSERT</Button>
-                                            <Button  variant="contained" color="secondary" onClick={() => {resetCollection()}}>CLOSE</Button>
-
-                                        </Toolbar>
-                                        <Paper className={classes.paper}>
-                                            <FindAll credentials = {Auth} documentName={documentName.bind(this)}/>
-                                        </Paper>
-                                    </Grid>
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </main>
+                <LinearProgress color="secondary" />
             )
         } else {
-            return (
-                <main className={classes.content}>
-                    <div className={classes.appBarSpacer} />
-                    <Container maxWidth="lg" className={classes.container}>
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <Paper className={classes.paper}>
-                                    Some text
-                                </Paper>
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </main>
-            )
+            if(submitCollections){
+                return(
+                    <List component="nav" aria-label="main mailbox folders"
+                          subheader={
+                              <ListSubheader component="div" id="nested-list-subheader">
+                                  Collections
+                              </ListSubheader>}>
+                                {collections.data.map((item, key) => {
+                                    return (
+                                        <ListItem button key={key} onClick={() => {fetch(1, item.name)}}>
+                                            <ListItemText primary={item.name}/>
+                                        </ListItem>
+                                    )
+                                })}
+                    </List>
+                );
+            } else {
+                return (
+                    <List component="nav" aria-label="main mailbox folders"
+                          subheader={
+                              <ListSubheader component="div" id="nested-list-subheader">
+                                  Click to refresh
+                              </ListSubheader>
+                          }>
+                    </List>
+                );
+            }
         }
     };
 
-    return (
-        <div className={classes.root}>
-            <CssBaseline />
-            {appBar()}
-            {drawerContainer()}
-            {mainContainer()}
-        </div>
-    );
-}
+    // documents
+    const renderDocuments = () => {
+        if(loadingDocuments){
+            return (
+                <Container maxWidth="lg" className={classes.container}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <Paper className={classes.paper}>
+                                 <LinearProgress color="secondary" />
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </Container>
+            )
+        } else {
+            if (submitDocuments) {
+                return (
+                    <Container maxWidth="lg" className={classes.container}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+                                    <List component="nav" aria-label="main mailbox folders">
+                                        {documents.data.map((item, key) => {
+                                            return (
+                                                <ListItem button key={key} onClick={() => { handleClickOpen(item._id, item) }}>
+                                                    {key}
+                                                    <ListItemText primary={item._id} style={{ overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap'}}/>
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton edge="end" aria-label="delete">
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
+                                                </ListItem>
+                                            )
+                                        })}
+                                    </List>
+                                </Paper>
+                            </Grid>
+                        </Grid>
+                    </Container>
+                );
+            } else {
+                return (
+                    <List component="nav" aria-label="main mailbox folders">
+                        <Typography component="h1" variant="h2" color="textPrimary" gutterBottom>
+                            Click to refresh
+                        </Typography>
+                    </List>
+                );
+            }
+        }
+    };
 
-class Dashboard extends Component {
-    constructor(props) {
-        super(props);
-    }
+    // fetch data from teh server
+    const fetch = (value, collection) => {
+        if(value === 0){
+            setLoadingCollections(true);
+            axios
+                .post(
+                    "/mongo/get/collections",
+                    {url: url,
+                        database: database},
+                )
+                .then(response => {
+                    setCollections(response);
+                    setLoadingCollections(false);
+                    setSubmitCollections(true);
+                })
+                .catch(error => {
+                    setLoadingCollections(false);
+                });
+        } else if(value === 1){
+            setLoadingDocuments(true);
+            axios
+                .post(
+                    "/mongo/find/all",
+                    {url: url,
+                        database: database,
+                        collection: collection},
+                )
+                .then(response => {
+                    setDocuments(response);
+                    console.log(response);
+                    setLoadingDocuments(false);
+                    setSubmitDocuments(true)
+                })
+                .catch(error => {
+                    console.log(error);
+                    setLoadingDocuments(false);
+                });
+        }
+    };
 
-    render() {
+    // render all
+    if(render) {
         return (
-            <div className='App'>
-                <View />
+            <Fade in={true}>
+            <div className={classes.root}>
+                <CssBaseline/>
+                <AppBar position="fixed" className={classes.appBar}>
+                    <Toolbar>
+                        <Typography variant="h6" noWrap>
+                            {database}
+                        </Typography>
+                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {fetch(0, null)}}>
+                            <RefreshIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <Drawer
+                    className={classes.drawer}
+                    variant="permanent"
+                    classes={{
+                        paper: classes.drawerPaper,
+                    }}
+                    anchor="left">
+                    <div className={classes.toolbarIcon}>
+                        <Link to={{pathname: '/mongo/cluster/', state: {url: url}}}>
+                            <IconButton className={classes.menuButton}>
+                                <ChevronLeftIcon />
+                            </IconButton>
+                        </Link>
+                    </div>
+                    <Divider/>
+                    {renderCollections()}
+                    <Divider/>
+                </Drawer>
+                <main className={classes.content}>
+                    <div className={classes.toolbar}/>
+                    {renderDocuments()}
+                </main>
+                <div>
+                    <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        scroll={'paper'}
+                        aria-labelledby="scroll-dialog-title"
+                        aria-describedby="scroll-dialog-description">
+                        <DialogTitle id="scroll-dialog-title">{id}</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText
+                                id="scroll-dialog-description"
+                                ref={descriptionElementRef}
+                                tabIndex={-1}>
+                                <ReactJson src={scroll} />
+                            </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose} color="primary">
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                </div>
             </div>
+            </Fade>
         );
+    } else {
+        return(
+            <div className={classes.root}>
+                <CssBaseline/>
+            </div>
+        )
     }
 }
 
 export default Dashboard;
-

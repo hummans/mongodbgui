@@ -15,11 +15,7 @@ import { Link } from 'react-router-dom';
 import SignUpStyle from '../Styles/SignUp'
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import axios from "axios";
-import AppBar from "@material-ui/core/AppBar/AppBar";
-import clsx from "clsx";
-import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/core/SvgIcon/SvgIcon";
+
 import 'bootstrap/dist/css/bootstrap.css'
 import LinearProgress from "@material-ui/core/LinearProgress";
 
