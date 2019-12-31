@@ -17,10 +17,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // http://localhost:4000/get/data/firebase?database=asAS&type=1245
-app.get('/get/data/:ass', (req, res) => {
-    var query = req.query;
-    var filter = req.params.ass;
-    res.send('user id ' + query.database + query.type + filter);
+app.get('/get/data/', () => {
+    var MongoClient = require('mongodb').MongoClient;
+    MongoClient.connect("mongodb://localhost:27017/MyDb", function (err, db) {
+        if(err) throw console.log(err);
+        console.log('okay')
+    });
 });
 
 // delete many

@@ -27,6 +27,7 @@ class Cluster extends Component {
         this.state = {
             data : [],
             url: null,
+            type :null,
             submit: false,
         };
     }
@@ -39,10 +40,11 @@ class Cluster extends Component {
         }
     };
 
-    getCluster (url){
+    getCluster (url, type){
         this.setState({
             submit: true,
             url: url,
+            type: type,
         });
         axios
             .post(
@@ -63,8 +65,9 @@ class Cluster extends Component {
             });
     }
 
-    componentDidMount(){
-        this.getCluster(this.props.location.state.url);
+    componentDidMount() {
+        this.getCluster(this.props.location.state.url, this.props.location.state.type);
+
     }
 
     render() {
@@ -76,7 +79,7 @@ class Cluster extends Component {
                     {this.loadProgressBar()}
                     <Grid container justify="flex-start" className='mt-4'>
                         <Grid item>
-                            <Link to={'/mongo/'} variant="h5">
+                            <Link to={'/' + this.state.type +  '/'} variant="h5">
                                 <IconButton>
                                     <ChevronLeftIcon />
                                 </IconButton>
@@ -99,14 +102,14 @@ class Cluster extends Component {
                     <CssBaseline />
                     <Grid container justify="flex-start" className='mt-4'>
                         <Grid item xs>
-                            <Link to={'/mongo/'} variant="h5">
+                            <Link to={'/' + this.state.type +  '/'} variant="h5">
                                 <IconButton>
                                     <ChevronLeftIcon />
                                 </IconButton>
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link to={'/mongo/'} variant="h5">
+                            <Link to={'/' + this.state.type +  '/'} variant="h5">
                                 <IconButton>
                                     <AddCircleOutlineIcon />
                                 </IconButton>

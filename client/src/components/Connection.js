@@ -26,10 +26,16 @@ export default class Connection extends Component {
         this.state = {
             submit: false,
             url: null,
+            localhost: null,
+            port:null,
             response: null,
-
+            type: null
         };
 
+    }
+
+    componentDidMount() {
+        this.setState({type:this.props.match.params.connection});
     }
 
     progressbar () {
@@ -48,31 +54,62 @@ export default class Connection extends Component {
         }
     }
 
-    submit (e) {
+    submit (value, e) {
         e.preventDefault();
         this.setState({
             submit: true
         });
-        axios
-            .post(
-                "/auth/check",
-                {url: this.state.url},
-            )
-            .then(response => {
-                this.setState({
-                    submit: false,
-                    render: true,
-                    response: response.data.status
+
+        if(value === 0){
+            axios
+                .post(
+                    "/auth/check",
+                    {url: this.state.url},
+                )
+                .then(response => {
+                    this.setState({
+                        submit: false,
+                        render: true,
+                        response: response.data.status
+                    });
+                    console.log(response);
+                })
+                .catch(error => {
+                    this.setState({
+                        submit: false,
+                        render: true,
+                        response: error
+                    });
                 });
-                console.log(response);
-            })
-            .catch(error => {
-                this.setState({
-                    submit: false,
-                    render: true,
-                    response: error
-                });
+        } else {
+            const url = "mongodb://" + this.state.localhost + ":" + this.state.port+ "/";
+            this.setState({
+                url: url
             });
+
+            console.log(url);
+            axios
+                .post(
+                    "/auth/check",
+                    {url: url},
+                )
+                .then(response => {
+                    this.setState({
+                        submit: false,
+                        render: true,
+                        response: response.data.status
+                    });
+                    console.log(response);
+                })
+                .catch(error => {
+                    this.setState({
+                        submit: false,
+                        render: true,
+                        response: error
+                    });
+                });
+        }
+
     };
 
     render() {
@@ -101,17 +138,64 @@ export default class Connection extends Component {
         } else {
             if(this.state.response === 'ok'){
                 return (
-                    <Redirect to={{pathname: '/mongo/cluster', state: {url: this.state.url}}}>Continue</Redirect>
+                    <Redirect to={{pathname: '/mongo/cluster', state: {url: this.state.url, type: this.state.type}}}/>
                 )
             } else if (this.state.response === 'error'){
-                return (
+                if(this.state.type === 'mongo') {
+                    return (
+                        <Container component="main" maxWidth="md">
+                            <CssBaseline/>
+                            <Grid container justify="flex-start" className='mt-4'>
+                                <Grid item>
+                                    <Link to={'/'} variant="h5">
+                                        <IconButton>
+                                            <ChevronLeftIcon/>
+                                        </IconButton>
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                                Connection string is not valid
+                            </Typography>
+                            <form noValidate onSubmit={(e) => {
+                                this.submit(0, e)
+                            }}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="text"
+                                    label="URL"
+                                    name="text"
+                                    autoComplete="text"
+                                    autoFocus
+                                    onChange={e => this.setState({
+                                        url: e.target.value
+                                    })}
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary">
+                                    Connect
+                                </Button>
+                            </form>
+                            <Box mt={8}>
+                                <Copyright/>
+                            </Box>
+                        </Container>
+                    );
+                } else {
+                    return(
                     <Container component="main" maxWidth="md">
-                        <CssBaseline />
+                        <CssBaseline/>
                         <Grid container justify="flex-start" className='mt-4'>
                             <Grid item>
                                 <Link to={'/'} variant="h5">
-                                    <IconButton >
-                                        <ChevronLeftIcon />
+                                    <IconButton>
+                                        <ChevronLeftIcon/>
                                     </IconButton>
                                 </Link>
                             </Grid>
@@ -120,21 +204,34 @@ export default class Connection extends Component {
                             Connection string is not valid
                         </Typography>
                         <form noValidate onSubmit={(e) => {
-                            this.submit(e)
+                            this.submit(1, e)
                         }}>
                             <TextField
                                 variant="outlined"
                                 margin="normal"
                                 required
                                 fullWidth
-                                id="text"
-                                label="URL"
-                                name="text"
+                                id="localhost"
+                                label="Localhost"
+                                name="localhost"
                                 autoComplete="text"
                                 autoFocus
-                                value={this.check(this.state.url)}
                                 onChange={e => this.setState({
-                                    url: e.target.value
+                                    localhost: e.target.value
+                                })}
+                            />
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="port"
+                                label="Port"
+                                name="port"
+                                autoComplete="text"
+                                autoFocus
+                                onChange={e => this.setState({
+                                    port: e.target.value
                                 })}
                             />
                             <Button
@@ -146,56 +243,119 @@ export default class Connection extends Component {
                             </Button>
                         </form>
                         <Box mt={8}>
-                            <Copyright />
+                            <Copyright/>
                         </Box>
                     </Container>
-                );
+                    );
+                }
             } else {
-                return (
-                    <Container component="main" maxWidth="md">
-                        <CssBaseline />
-                        <Grid container justify="flex-start" className='mt-4'>
-                            <Grid item>
-                                <Link to={'/'} variant="h5">
-                                    <IconButton>
-                                        <ChevronLeftIcon />
-                                    </IconButton>
-                                </Link>
+                if(this.state.type === 'mongo'){
+                    return (
+                        <Container component="main" maxWidth="md">
+                            <CssBaseline />
+                            <Grid container justify="flex-start" className='mt-4'>
+                                <Grid item>
+                                    <Link to={'/'} variant="h5">
+                                        <IconButton>
+                                            <ChevronLeftIcon />
+                                        </IconButton>
+                                    </Link>
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                            Connection string
-                        </Typography>
-                        <form noValidate onSubmit={(e) => {
-                            this.submit(e)
-                        }}>
-                            <TextField
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="text"
-                                label="URL"
-                                name="text"
-                                autoComplete="text"
-                                autoFocus
-                                onChange={e => this.setState({
-                                    url: e.target.value
-                                })}
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary">
-                                Connect
-                            </Button>
-                        </form>
-                        <Box mt={8}>
-                            <Copyright />
-                        </Box>
-                    </Container>
-                );
+                            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                                Connection string
+                            </Typography>
+                            <form noValidate onSubmit={(e) => {
+                                this.submit(0, e)
+                            }}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="text"
+                                    label="URL"
+                                    name="text"
+                                    autoComplete="text"
+                                    autoFocus
+                                    onChange={e => this.setState({
+                                        url: e.target.value
+                                    })}
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary">
+                                    Connect
+                                </Button>
+                            </form>
+                            <Box mt={8}>
+                                <Copyright />
+                            </Box>
+                        </Container>
+                    );
+                } else {
+                    return (
+                        <Container component="main" maxWidth="md">
+                            <CssBaseline />
+                            <Grid container justify="flex-start" className='mt-4'>
+                                <Grid item>
+                                    <Link to={'/'} variant="h5">
+                                        <IconButton>
+                                            <ChevronLeftIcon />
+                                        </IconButton>
+                                    </Link>
+                                </Grid>
+                            </Grid>
+                            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
+                                Localhost
+                            </Typography>
+                            <form noValidate onSubmit={(e) => {
+                                this.submit(1, e)
+                            }}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="localhost"
+                                    label="Localhost"
+                                    name="localhost"
+                                    autoComplete="text"
+                                    autoFocus
+                                    onChange={e => this.setState({
+                                        localhost: e.target.value
+                                    })}
+                                />
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    id="port"
+                                    label="Port"
+                                    name="port"
+                                    autoComplete="text"
+                                    autoFocus
+                                    onChange={e => this.setState({
+                                        port: e.target.value
+                                    })}
+                                />
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary">
+                                    Connect
+                                </Button>
+                            </form>
+                            <Box mt={8}>
+                                <Copyright />
+                            </Box>
+                        </Container>
+                    );
+                }
             }
         }
     }

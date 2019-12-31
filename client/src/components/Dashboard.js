@@ -21,6 +21,7 @@ import IconButton from "@material-ui/core/IconButton";
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import StorageIcon from '@material-ui/icons/Storage';
 
 import {Link} from "react-router-dom";
 import ListSubheader from "@material-ui/core/ListSubheader";
@@ -417,6 +418,9 @@ function Dashboard() {
                 <CssBaseline/>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
+                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
+                            <StorageIcon />
+                        </IconButton>
                         <Typography variant="h6" noWrap className={classes.databaseTitle}>
                             {database}
                         </Typography>
