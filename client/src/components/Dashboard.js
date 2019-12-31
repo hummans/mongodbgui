@@ -97,6 +97,8 @@ function Dashboard() {
     const [render, setRender] = useState(false);
     const [url, setUrl] = useState(null);
     const [database, setDatabase] = useState(null);
+    const [collection, setCollection] = useState(null);
+
 
     // collections
     const [submitCollections, setSubmitCollections] = useState(false);
@@ -108,17 +110,19 @@ function Dashboard() {
     const [loadingDocuments, setLoadingDocuments] = useState(false);
     const [documents, setDocuments] = useState(null);
 
-    // document
-    const [submitRow, setSubmitRow] = useState(false);
-    const [loadingRow, setLoadingRow] = useState(false);
-    const [row, setRow] = useState(null);
-
+    // dialog new collection
+    const [openCollection, setOpenCollection] = React.useState(false); // state
+    const [newCollection, setNewCollection] = React.useState(null);
     const [submitNewCollection, setSubmitNewCollection] = useState(false);
-    const [collectionName, setCollectionName] = React.useState(null);
 
-    // dialog
-    const [opencollection, setOpenCollection] = React.useState(false);
-    const [openrow, setOpenRow] = React.useState(false);
+    // dialog open row
+    const [openRow, setOpenRow] = React.useState(false); // dialog state
+
+    // dialog new document
+    const [openNewDocument, setOpenNewDocument] = React.useState(false); // state
+    const [newDocument, setNewDocument] = React.useState(null); // document data
+    const [submitNewDocument, setSubmitNewDocument] = useState(false); // is submit
+
     const [id, setId] = React.useState(null);
     const [scroll, setScroll] = React.useState(null);
 
@@ -140,25 +144,41 @@ function Dashboard() {
         setOpenCollection(false);
     };
 
+    const handleClickOpenNewDocument = () => {
+        setOpenNewDocument(true);
+    };
+
+    const handleClickCloseNewDocument = () => {
+        setOpenNewDocument(false);
+    };
+
     const descriptionElementRef = React.useRef(null);
     React.useEffect(() => {
-        if (openrow) {
+        if (openRow) {
             const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
         }
-    }, [openrow]);
+    }, [openRow]);
 
     React.useEffect(() => {
-        if (opencollection) {
+        if (openCollection) {
             const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
         }
-    }, [opencollection]);
+    }, [openCollection]);
 
+    React.useEffect(() => {
+        if (openNewDocument) {
+            const { current: descriptionElement } = descriptionElementRef;
+            if (descriptionElement !== null) {
+                descriptionElement.focus();
+            }
+        }
+    }, [openCollection]);
 
     useEffect(() => {
         // misc
@@ -192,7 +212,7 @@ function Dashboard() {
                                 {collections.data.map((item, key) => {
                                     return (
                                         <ListItem button key={key} onClick={() => {fetch(1, item.name)}}>
-                                            <ListItemText primary={item.name}/>
+                                            <ListItemText primary={item.name} />
                                         </ListItem>
                                     )
                                 })}
@@ -234,11 +254,20 @@ function Dashboard() {
                             <Grid item xs={12}>
                                 <Paper className={classes.paper}>
                                     <List component="nav" aria-label="main mailbox folders">
+                                        <ListItem button key={0}>
+                                            <ListItemText primary={"Create new document"} style={{ overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap'}} onClick={() => {handleClickOpenNewDocument()}} />
+                                            <ListItemSecondaryAction aria-disabled={"true"}>
+                                                <IconButton edge="end" aria-label="delete">
+                                                    <AddCircleOutlineIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
                                         {documents.data.map((item, key) => {
                                             return (
-                                                <ListItem button key={key} onClick={() => { handleClickOpenRow(item._id, item) }}>
-                                                    {key}
-                                                    <ListItemText primary={item._id} style={{ overflow: 'hidden',
+                                                <ListItem button key={key+1} onClick={() => { handleClickOpenRow(item._id, item) }}>
+                                                    <ListItemText primary={key +  " " +   item._id} style={{ overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
                                                         whiteSpace: 'nowrap'}}/>
                                                     <ListItemSecondaryAction>
@@ -276,7 +305,7 @@ function Dashboard() {
     };
 
     // fetch data from teh server
-    const fetch = (value, collection) => {
+    const fetch = (value, data) => {
         if(value === 0){
             setLoadingCollections(true);
             axios
@@ -294,13 +323,14 @@ function Dashboard() {
                     setLoadingCollections(false);
                 });
         } else if(value === 1){
+            setCollection(data);
             setLoadingDocuments(true);
             axios
                 .post(
                     "/mongo/find/all",
                     {url: url,
                         database: database,
-                        collection: collection},
+                        collection: data},
                 )
                 .then(response => {
                     setDocuments(response);
@@ -319,7 +349,7 @@ function Dashboard() {
                     "/mongo/create/collection",
                     {url: url,
                         database: database,
-                        collection: collection},
+                        collection: data},
                 )
                 .then(response => {
                     console.log(response);
@@ -330,6 +360,26 @@ function Dashboard() {
                     console.log(error);
                     setSubmitNewCollection(false);
                     setOpenCollection(false);
+                });
+        } else if(value === 3){
+            setSubmitNewDocument(true);
+            axios
+                .post(
+                    "/mongo/insert/one",
+                    {url: url,
+                        database: database,
+                        collection: collection,
+                        document: data},
+                )
+                .then(response => {
+                    console.log(response);
+                    setSubmitNewDocument(false);
+                    setOpenNewDocument(false);
+                })
+                .catch(error => {
+                    console.log(error);
+                    setSubmitNewDocument(false);
+                    setOpenNewDocument(false);
                 });
         }
     };
@@ -377,7 +427,7 @@ function Dashboard() {
                 </main>
                 <div>
                     <Dialog
-                        open={openrow}
+                        open={openRow}
                         onClose={handleClickCloseRow}
                         fullWidth={true}
                         maxWidth={"md"}
@@ -402,7 +452,7 @@ function Dashboard() {
                         </DialogActions>
                     </Dialog>
                     <Dialog
-                        open={opencollection}
+                        open={openCollection}
                         fullWidth={true}
                         maxWidth={"sm"}
                         onClose={handleClickCloseCollection}
@@ -426,14 +476,50 @@ function Dashboard() {
                                 label="Collection"
                                 type="text"
                                 fullWidth
-                                onChange={e => setCollectionName(e.target.value)}
+                                onChange={e => setNewCollection(e.target.value)}
                             />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={handleClickCloseCollection} color="primary" onClick={() => {fetch(2, collectionName)}}>
+                            <Button color="primary" onClick={() => {fetch(2, newCollection)}}>
                                 Add
                             </Button>
                             <Button onClick={handleClickCloseCollection} color="primary">
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog
+                        open={openNewDocument}
+                        fullWidth={true}
+                        maxWidth={"sm"}
+                        onClose={handleClickCloseNewDocument}
+                        scroll={'paper'}
+                        aria-labelledby="scroll-dialog-title"
+                        aria-describedby="scroll-dialog-description">
+                        <DialogTitle id="scroll-dialog-title">Create new document</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText
+                                id="scroll-dialog-description"
+                                ref={descriptionElementRef}
+                                tabIndex={-1}>
+
+                                asdasdasdas
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Collection"
+                                type="text"
+                                fullWidth
+                                onChange={e => setNewDocument(e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button color="primary" onClick={() => {fetch(3, newDocument)}}>
+                                Add
+                            </Button>
+                            <Button onClick={handleClickCloseNewDocument} color="primary">
                                 Close
                             </Button>
                         </DialogActions>
