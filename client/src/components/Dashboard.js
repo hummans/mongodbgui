@@ -10,7 +10,7 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
-
+import TextField from '@material-ui/core/TextField';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import LinearProgress from "@material-ui/core/LinearProgress";
@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 
 import {Link} from "react-router-dom";
 import ListSubheader from "@material-ui/core/ListSubheader";
@@ -75,6 +76,9 @@ const useStyles = makeStyles(theme => ({
     refreshButton: {
         marginLeft: theme.spacing(2),
     },
+    databaseTitle: {
+        flexGrow: 1,
+    },
     container: {
         paddingTop: theme.spacing(4),
         paddingBottom: theme.spacing(4),
@@ -109,33 +113,51 @@ function Dashboard() {
     const [loadingRow, setLoadingRow] = useState(false);
     const [row, setRow] = useState(null);
 
-
-    const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+    const [submitNewCollection, setSubmitNewCollection] = useState(false);
+    const [collectionName, setCollectionName] = React.useState(null);
 
     // dialog
-    const [open, setOpen] = React.useState(false);
+    const [opencollection, setOpenCollection] = React.useState(false);
+    const [openrow, setOpenRow] = React.useState(false);
     const [id, setId] = React.useState(null);
     const [scroll, setScroll] = React.useState(null);
 
-    const handleClickOpen = (id, scrollType) => {
-        setOpen(true);
+    const handleClickOpenRow = (id, scrollType) => {
+        setOpenRow(true);
         setId(id);
         setScroll(scrollType);
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    const handleClickCloseRow = () => {
+        setOpenRow(false);
+    };
+
+    const handleClickOpenCollection = () => {
+        setOpenCollection(true);
+    };
+
+    const handleClickCloseCollection = () => {
+        setOpenCollection(false);
     };
 
     const descriptionElementRef = React.useRef(null);
     React.useEffect(() => {
-        if (open) {
+        if (openrow) {
             const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
         }
-    }, [open]);
+    }, [openrow]);
+
+    React.useEffect(() => {
+        if (opencollection) {
+            const { current: descriptionElement } = descriptionElementRef;
+            if (descriptionElement !== null) {
+                descriptionElement.focus();
+            }
+        }
+    }, [opencollection]);
 
 
     useEffect(() => {
@@ -143,6 +165,14 @@ function Dashboard() {
         setUrl(location.state.url);
         setDatabase(location.state.database);
         setRender(true);
+    }, []);
+
+    useEffect(() => {
+        console.log(render);
+        if(render){
+            fetch(0, null);
+            console.log('get');
+        }
     }, []);
 
     // collections
@@ -206,7 +236,7 @@ function Dashboard() {
                                     <List component="nav" aria-label="main mailbox folders">
                                         {documents.data.map((item, key) => {
                                             return (
-                                                <ListItem button key={key} onClick={() => { handleClickOpen(item._id, item) }}>
+                                                <ListItem button key={key} onClick={() => { handleClickOpenRow(item._id, item) }}>
                                                     {key}
                                                     <ListItemText primary={item._id} style={{ overflow: 'hidden',
                                                         textOverflow: 'ellipsis',
@@ -234,6 +264,14 @@ function Dashboard() {
                     </List>
                 );
             }
+        }
+    };
+
+    const renderDialogProgressBar = () => {
+        if (submitNewCollection) {
+            return (
+                <LinearProgress color="secondary" />
+            );
         }
     };
 
@@ -274,6 +312,25 @@ function Dashboard() {
                     console.log(error);
                     setLoadingDocuments(false);
                 });
+        }  else if(value === 2){
+            setSubmitNewCollection(true);
+            axios
+                .post(
+                    "/mongo/create/collection",
+                    {url: url,
+                        database: database,
+                        collection: collection},
+                )
+                .then(response => {
+                    console.log(response);
+                    setSubmitNewCollection(false);
+                    setOpenCollection(false);
+                })
+                .catch(error => {
+                    console.log(error);
+                    setSubmitNewCollection(false);
+                    setOpenCollection(false);
+                });
         }
     };
 
@@ -285,11 +342,14 @@ function Dashboard() {
                 <CssBaseline/>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
-                        <Typography variant="h6" noWrap>
+                        <Typography variant="h6" noWrap className={classes.databaseTitle}>
                             {database}
                         </Typography>
                         <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {fetch(0, null)}}>
                             <RefreshIcon />
+                        </IconButton>
+                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
+                            <AddCircleOutlineIcon />
                         </IconButton>
                     </Toolbar>
                 </AppBar>
@@ -317,8 +377,10 @@ function Dashboard() {
                 </main>
                 <div>
                     <Dialog
-                        open={open}
-                        onClose={handleClose}
+                        open={openrow}
+                        onClose={handleClickCloseRow}
+                        fullWidth={true}
+                        maxWidth={"md"}
                         scroll={'paper'}
                         aria-labelledby="scroll-dialog-title"
                         aria-describedby="scroll-dialog-description">
@@ -328,11 +390,50 @@ function Dashboard() {
                                 id="scroll-dialog-description"
                                 ref={descriptionElementRef}
                                 tabIndex={-1}>
-                                <ReactJson src={scroll} />
+                                Enter content name
                             </DialogContentText>
+
+                            <ReactJson src={scroll} />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={handleClose} color="primary">
+                            <Button onClick={handleClickCloseRow} color="primary">
+                                Close
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Dialog
+                        open={opencollection}
+                        fullWidth={true}
+                        maxWidth={"sm"}
+                        onClose={handleClickCloseCollection}
+                        scroll={'paper'}
+                        aria-labelledby="scroll-dialog-title"
+                        aria-describedby="scroll-dialog-description">
+                        {renderDialogProgressBar()}
+                        <DialogTitle id="scroll-dialog-title">Create new collection</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText
+                                id="scroll-dialog-description"
+                                ref={descriptionElementRef}
+                                tabIndex={-1}>
+
+                                asdasdasdas
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Collection"
+                                type="text"
+                                fullWidth
+                                onChange={e => setCollectionName(e.target.value)}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClickCloseCollection} color="primary" onClick={() => {fetch(2, collectionName)}}>
+                                Add
+                            </Button>
+                            <Button onClick={handleClickCloseCollection} color="primary">
                                 Close
                             </Button>
                         </DialogActions>

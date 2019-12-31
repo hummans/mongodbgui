@@ -43,12 +43,12 @@ app.post('/drop/collection/', (req, res) => {
 });
 
 // create collection
-app.post('/create/collection/', (req, res) => {
+app.post('/:type/create/collection/', (req, res) => {
     _create.createCollection(req, res)
 });
 
 // insert row
-app.post('/insert/one/', (req, res) => {
+app.post('/:type/insert/one/', (req, res) => {
    _insert.insertOne(req, res)
 });
 
