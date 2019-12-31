@@ -40,6 +40,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "@material-ui/core/Button";
 import ReactJson from 'react-json-view'
 
+const validate = require('jsonschema').validate;
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
@@ -195,6 +197,15 @@ function Dashboard() {
         }
     }, []);
 
+    const isJson = (str) => {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    };
+
     // collections
     const renderCollections = () => {
         if(loadingCollections){
@@ -304,6 +315,15 @@ function Dashboard() {
         }
     };
 
+    const renderDialogNewDocumentProgressBar = () => {
+        if (submitNewDocument) {
+            return (
+                <LinearProgress color="secondary" />
+            );
+        }
+    };
+
+
     // fetch data from teh server
     const fetch = (value, data) => {
         if(value === 0){
@@ -362,25 +382,30 @@ function Dashboard() {
                     setOpenCollection(false);
                 });
         } else if(value === 3){
-            setSubmitNewDocument(true);
-            axios
-                .post(
-                    "/mongo/insert/one",
-                    {url: url,
-                        database: database,
-                        collection: collection,
-                        document: data},
-                )
-                .then(response => {
-                    console.log(response);
-                    setSubmitNewDocument(false);
-                    setOpenNewDocument(false);
-                })
-                .catch(error => {
-                    console.log(error);
-                    setSubmitNewDocument(false);
-                    setOpenNewDocument(false);
-                });
+            if(isJson(data)){
+                setSubmitNewDocument(true);
+                axios
+                    .post(
+                        "/mongo/insert/one",
+                        {url: url,
+                            database: database,
+                            collection: collection,
+                            document: data},
+                    )
+                    .then(response => {
+                        console.log(response);
+                        setSubmitNewDocument(false);
+                        setOpenNewDocument(false);
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        setSubmitNewDocument(false);
+                        setOpenNewDocument(false);
+                    });
+            } else {
+                setSubmitNewDocument(false);
+            }
+
         }
     };
 
@@ -496,6 +521,7 @@ function Dashboard() {
                         scroll={'paper'}
                         aria-labelledby="scroll-dialog-title"
                         aria-describedby="scroll-dialog-description">
+                        {renderDialogNewDocumentProgressBar()}
                         <DialogTitle id="scroll-dialog-title">Create new document</DialogTitle>
                         <DialogContent>
                             <DialogContentText
