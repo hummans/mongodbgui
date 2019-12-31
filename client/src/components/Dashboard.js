@@ -80,6 +80,7 @@ const useStyles = makeStyles(theme => ({
         marginLeft: theme.spacing(2),
     },
     databaseTitle: {
+        marginLeft: theme.spacing(2),
         flexGrow: 1,
     },
     container: {
@@ -418,9 +419,7 @@ function Dashboard() {
                 <CssBaseline/>
                 <AppBar position="fixed" className={classes.appBar}>
                     <Toolbar>
-                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
-                            <StorageIcon />
-                        </IconButton>
+                        <StorageIcon color="inherit"  />
                         <Typography variant="h6" noWrap className={classes.databaseTitle}>
                             {database}
                         </Typography>
