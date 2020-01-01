@@ -41,6 +41,19 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from "@material-ui/core/Button";
 import ReactJson from 'react-json-view'
 
+import Tooltip from '@material-ui/core/Tooltip';
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
+import DescriptionIcon from '@material-ui/icons/Description';
+import EditIcon from '@material-ui/icons/Edit';
+import Box from "@material-ui/core/Box";
+
 const validate = require('jsonschema').validate;
 
 const drawerWidth = 240;
@@ -89,6 +102,9 @@ const useStyles = makeStyles(theme => ({
     },
     fixedHeight: {
         height: 240,
+    },
+    table: {
+        minWidth: 650,
     },
 }));
 
@@ -157,9 +173,10 @@ function Dashboard() {
     };
 
     const descriptionElementRef = React.useRef(null);
+
     React.useEffect(() => {
         if (openRow) {
-            const { current: descriptionElement } = descriptionElementRef;
+            const {current: descriptionElement} = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
@@ -168,7 +185,7 @@ function Dashboard() {
 
     React.useEffect(() => {
         if (openCollection) {
-            const { current: descriptionElement } = descriptionElementRef;
+            const {current: descriptionElement} = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
@@ -177,7 +194,7 @@ function Dashboard() {
 
     React.useEffect(() => {
         if (openNewDocument) {
-            const { current: descriptionElement } = descriptionElementRef;
+            const {current: descriptionElement} = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
@@ -191,14 +208,6 @@ function Dashboard() {
         setRender(true);
     }, []);
 
-    useEffect(() => {
-        console.log(render);
-        if(render){
-            fetch(0, null);
-            console.log('get');
-        }
-    }, []);
-
     const isJson = (str) => {
         try {
             JSON.parse(str);
@@ -208,27 +217,40 @@ function Dashboard() {
         return true;
     };
 
+    const setHeader = (value) => {
+        document.title = value;
+    };
+
+    const checkCollectionList = (value) => {
+        return (
+            value.data.map((item, key) => {
+                return (
+                    <ListItem button key={key} onClick={() => {
+                        fetch(1, item.name)
+                    }}>
+                        <ListItemText primary={item.name}/>
+                    </ListItem>
+                )
+            })
+        );
+    };
+
     // collections
     const renderCollections = () => {
-        if(loadingCollections){
+        if (loadingCollections) {
             return (
-                <LinearProgress color="secondary" />
+                <LinearProgress color="secondary"/>
             )
         } else {
-            if(submitCollections){
-                return(
+            if (submitCollections) {
+                return (
                     <List component="nav" aria-label="main mailbox folders"
                           subheader={
                               <ListSubheader component="div" id="nested-list-subheader">
                                   Collections
                               </ListSubheader>}>
-                                {collections.data.map((item, key) => {
-                                    return (
-                                        <ListItem button key={key} onClick={() => {fetch(1, item.name)}}>
-                                            <ListItemText primary={item.name} />
-                                        </ListItem>
-                                    )
-                                })}
+                        {checkCollectionList(collections)}
+
                     </List>
                 );
             } else {
@@ -247,13 +269,41 @@ function Dashboard() {
 
     // documents
     const renderDocuments = () => {
-        if(loadingDocuments){
+        if (loadingDocuments) {
             return (
                 <Container maxWidth="lg" className={classes.container}>
                     <Grid container spacing={3}>
                         <Grid item xs={12}>
                             <Paper className={classes.paper}>
-                                 <LinearProgress color="secondary" />
+                                <LinearProgress color="secondary"/>
+                                <Toolbar>
+                                    <DescriptionIcon color="inherit"/>
+                                    <Typography variant="h6" noWrap className={classes.databaseTitle}>
+                                        {collection}
+                                    </Typography>
+                                    <Tooltip title={"Refresh document list"}>
+                                        <IconButton color="inherit" className={classes.refreshButton} onClick={() => {
+                                            fetch(1, collection)
+                                        }}>
+                                            <RefreshIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={"Create new document"}>
+                                        <IconButton color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenNewDocument()}}>
+                                            <AddCircleOutlineIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={"Edit the collection name"}>
+                                        <IconButton color="inherit" className={classes.refreshButton}>
+                                            <EditIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title={"Delete the collection from database"}>
+                                        <IconButton color="inherit" className={classes.refreshButton}>
+                                            <DeleteIcon/>
+                                        </IconButton>
+                                    </Tooltip>
+                                </Toolbar>
                             </Paper>
                         </Grid>
                     </Grid>
@@ -266,32 +316,43 @@ function Dashboard() {
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
                                 <Paper className={classes.paper}>
-                                    <List component="nav" aria-label="main mailbox folders">
-                                        <ListItem button key={0}>
-                                            <ListItemText primary={"Create new document"} style={{ overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'nowrap'}} onClick={() => {handleClickOpenNewDocument()}} />
-                                            <ListItemSecondaryAction aria-disabled={"true"}>
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <AddCircleOutlineIcon />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                        {documents.data.map((item, key) => {
-                                            return (
-                                                <ListItem button key={key+1} onClick={() => { handleClickOpenRow(item._id, item) }}>
-                                                    <ListItemText primary={key +  " " +   item._id} style={{ overflow: 'hidden',
-                                                        textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap'}}/>
-                                                    <ListItemSecondaryAction>
-                                                        <IconButton edge="end" aria-label="delete">
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </ListItemSecondaryAction>
-                                                </ListItem>
-                                            )
-                                        })}
-                                    </List>
+                                    <Toolbar>
+                                        <DescriptionIcon color="inherit"/>
+                                        <Typography variant="h6" noWrap className={classes.databaseTitle}>
+                                            {collection}
+                                        </Typography>
+                                        <Tooltip title={"Refresh document list"}>
+                                            <IconButton color="inherit" className={classes.refreshButton}
+                                                        onClick={() => {
+                                                            fetch(1, collection)
+                                                        }}>
+                                                <RefreshIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={"Create new document"}>
+                                            <IconButton color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenNewDocument()}}>
+                                                <AddCircleOutlineIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={"Edit the collection name"}>
+                                            <IconButton color="inherit" className={classes.refreshButton}>
+                                                <EditIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title={"Delete the collection from database"}>
+                                            <IconButton color="inherit" className={classes.refreshButton}>
+                                                <DeleteIcon/>
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Toolbar>
+                                </Paper>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Paper className={classes.paper}>
+
+                                                {checkDocumentList(documents)}
+
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -312,10 +373,83 @@ function Dashboard() {
     const renderDialogProgressBar = () => {
         if (submitNewCollection) {
             return (
-                <LinearProgress color="secondary" />
+                <LinearProgress color="secondary"/>
             );
         }
     };
+
+    const checkDocumentList = (value) => {
+        if (value.data.length === 0) {
+            return (
+                <Box p={2}>
+                    <Typography variant="h4" noWrap className={classes.databaseTitle} align={"center"}>
+                        {"Collection " + collection + " is empty"}
+                    </Typography>
+                </Box>
+            );
+        } else {
+            return (
+                <TableContainer component={Paper}>
+                    <Table className={classes.table} size={"small"} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Index</TableCell>
+                                <TableCell>Key</TableCell>
+                                <TableCell>Value</TableCell>
+                                <TableCell>Type</TableCell>
+                                <TableCell/>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {value.data.map((item, key) => {
+                    return (
+                        <TableRow key={key}>
+                            <TableCell component="th" scope="row">
+                                {key + 1}
+                            </TableCell>
+                            <TableCell component="th" scope="row">
+                                <Tooltip title={JSON.stringify(item)}>
+                                    <Button onClick={() => {
+                                        handleClickOpenRow(item._id, item)
+                                    }} component="span">
+                                        {item._id}
+                                    </Button>
+                                </Tooltip>
+                            </TableCell>
+                            <TableCell component="th" scope="row">
+                                <Tooltip title={Object.keys(item)}>
+                                    <Button component="span">
+                                        {'{ ' + Object.keys(item).length + ' fields }'}
+                                    </Button>
+                                </Tooltip>
+                            </TableCell>
+                            <TableCell component="th" scope="row">
+                                {typeof item}
+                            </TableCell>
+                            <TableCell component="th" scope="row">
+                                <Tooltip title={" Edit " + item._id + " document"}>
+                                    <IconButton edge="end" aria-label="delete" className={classes.refreshButton}>
+                                        <EditIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Tooltip title={" Delete " + item._id + " from collection"}>
+                                    <IconButton edge="end" aria-label="delete" className={classes.refreshButton}>
+                                        <DeleteIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            );
+        }
+
+    };
+
+
 
     const renderDialogNewDocumentProgressBar = () => {
         if (submitNewDocument) {
@@ -398,6 +532,7 @@ function Dashboard() {
                         console.log(response);
                         setSubmitNewDocument(false);
                         setOpenNewDocument(false);
+                        fetch(1, collection);
                     })
                     .catch(error => {
                         console.log(error);
@@ -413,6 +548,7 @@ function Dashboard() {
 
     // render all
     if(render) {
+        {setHeader("Mongo Admin : Collection")}
         return (
             <Fade in={true}>
             <div className={classes.root}>
@@ -423,12 +559,26 @@ function Dashboard() {
                         <Typography variant="h6" noWrap className={classes.databaseTitle}>
                             {database}
                         </Typography>
-                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {fetch(0, null)}}>
-                            <RefreshIcon />
-                        </IconButton>
-                        <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
-                            <AddCircleOutlineIcon />
-                        </IconButton>
+                        <Tooltip title={"Refresh collection list"}>
+                            <IconButton color="inherit" className={classes.refreshButton} onClick={() => {fetch(0, null)}}>
+                                <RefreshIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={"Create new collection"}>
+                            <IconButton  color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
+                                <AddCircleOutlineIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={"Edit the database name"}>
+                            <IconButton color="inherit" className={classes.refreshButton}>
+                                <EditIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={"Delete the collection from database"}>
+                            <IconButton aria-label="search" color="inherit" className={classes.refreshButton} onClick={() => {handleClickOpenCollection()}}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
                 <Drawer
@@ -527,13 +677,6 @@ function Dashboard() {
                         {renderDialogNewDocumentProgressBar()}
                         <DialogTitle id="scroll-dialog-title">Create new document</DialogTitle>
                         <DialogContent>
-                            <DialogContentText
-                                id="scroll-dialog-description"
-                                ref={descriptionElementRef}
-                                tabIndex={-1}>
-
-                                asdasdasdas
-                            </DialogContentText>
                             <TextField
                                 autoFocus
                                 margin="dense"
@@ -541,6 +684,7 @@ function Dashboard() {
                                 label="Collection"
                                 type="text"
                                 fullWidth
+                                variant="outlined"
                                 onChange={e => setNewDocument(e.target.value)}
                             />
                         </DialogContent>
@@ -565,5 +709,6 @@ function Dashboard() {
         )
     }
 }
+
 
 export default Dashboard;

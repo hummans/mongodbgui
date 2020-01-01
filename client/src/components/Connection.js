@@ -112,7 +112,12 @@ export default class Connection extends Component {
 
     };
 
+    setHeader (value) {
+        document.title = value;
+    };
+
     render() {
+        {this.setHeader("Mongo Admin : Connection")}
         if (this.state.submit) {
             return (
                 <Container component="main" maxWidth="md">

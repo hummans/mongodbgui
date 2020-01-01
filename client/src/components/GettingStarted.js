@@ -44,13 +44,19 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+const setHeader = (value) => {
+    document.title = value;
+};
+
 export default function GettingStarted() {
     const classes = useStyles();
+
     return (
         <React.Fragment>
             <CssBaseline />
             <main>
                 {/* Hero unit */}
+                {setHeader("Mongo Admin")}
                 <div className={classes.heroContent}>
                     <Container maxWidth="sm">
                         <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>

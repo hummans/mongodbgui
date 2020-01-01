@@ -35,7 +35,7 @@ app.post('/:type/delete/many', (req, res) => {
 });
 
 // delete one
-app.post('/delete/one/', (req, res) => {
+app.post('/:type/delete/one/', (req, res) => {
     _delete.deleteOne(req, res)
 });
 

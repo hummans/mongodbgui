@@ -24,6 +24,8 @@ module.exports = {
         var database = req.body.database;
         var collection = req.body.collection;
 
+        console.log(url, database, collection);
+
         try{
             MongoClient.connect(url, {useUnifiedTopology: true}, function(err, db) {
                 if (err) return  res.send('{"status":"error", "desc":'+ err + '}');

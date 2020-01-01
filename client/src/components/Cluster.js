@@ -70,7 +70,12 @@ class Cluster extends Component {
 
     }
 
+    setHeader (value) {
+        document.title = value;
+    };
+
     render() {
+        {this.setHeader("Mongo Admin : Cluster")}
         if(this.state.submit){
             return (
                 <Fade in={true}>
